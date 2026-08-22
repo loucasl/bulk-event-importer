@@ -1,0 +1,58 @@
+=== Bulk Event Importer ===
+Contributors: reddragoncreative
+Tags: events, import, ics, rss, jetengine
+Requires at least: 6.0
+Tested up to: 6.7
+Requires PHP: 7.4
+Stable tag: 2.0.0
+License: GPLv2 or later
+
+Fetches external calendar feeds (RSS/ICS), normalizes them, and creates/updates
+Event posts. Taxonomies, keyword rules, JetEngine field mapping, geocoding,
+and the allowlist filter are all configured per site from Settings, so one
+codebase runs on every site.
+
+== Description ==
+
+This plugin is shared, unmodified, across every site that uses it. All
+per-site behavior lives in Settings > Importer Settings:
+
+* Feed URLs and type detection
+* Blocked-keyword filter (always available) and allowlist filter (optional)
+* Import date window, default post status, cron interval
+* Categories & Taxonomies: define any number of taxonomies and keyword
+  groups; no category structure is hardcoded
+* JetEngine field mapping: point the plugin at this site's actual meta keys
+* Geocoding module (optional, requires a Google Geocoding API key)
+
+See MIGRATION.md in this repository for the settings needed to bring an
+existing install (running an older, site-forked version of this plugin) up
+to parity with zero behavior change.
+
+Two extensibility filters/actions are available for anything too
+site-specific to belong in the shared codebase:
+
+* `bei_event_source_name` (filter) — rewrite or blank a parsed source name.
+* `bei_after_upsert_event_post` (action) — fires after every create/update,
+  args: $post_id, $event, $status. Useful for hooking a site-specific
+  integration (e.g. auto-linking to a related custom post type).
+
+== Changelog ==
+
+= 2.0.0 =
+* Unified codebase merging two previously-forked, site-specific versions.
+* Added dynamic, admin-configurable taxonomy/keyword-group system.
+* Added configurable JetEngine field mapping (supports both a single
+  "Advanced Date" field and separate start/end date+time fields).
+* Added optional, toggleable geocoding module with configurable meta keys.
+* Added optional, toggleable allowlist keyword filter.
+* Fixed a timezone bug in RSS and ICS date parsing that could shift events
+  by several hours depending on server timezone.
+* Switched event de-duplication to a calendar-day-based hash with automatic
+  migration from the older datetime-based hash, so the timezone fix does
+  not create duplicate posts.
+* Much more resilient feed fetching: retry with backoff, IPv4 fallback,
+  sslverify=false last resort, and a 403 retry with feed-flavored headers.
+* Added automatic trashing of old events (configurable retention window).
+* Added per-feed skip-reason reporting in the AJAX import UI.
+* Configurable cron interval (hourly/twice-daily/daily).

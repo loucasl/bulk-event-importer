@@ -1,0 +1,231 @@
+/* Scope everything to this settings page */
+.bulk-event-importer-settings.wrap {
+  max-width: 900px;
+}
+
+.bulk-event-importer-settings .form-table th {
+    width: 240px;
+    vertical-align: top;
+    padding-top: 14px;
+}
+
+.bulk-event-importer-settings .form-table td {
+    max-width: 720px;
+}
+
+/* Chip box shared by blocklist, allowlist, and taxonomy group keywords */
+.bulk-event-importer-settings .chip-wrapper {
+    border: 1px solid #c3c4c7;
+    background: #fff;
+    padding: 10px 12px;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.07);
+    margin-top: 6px;
+}
+
+.bulk-event-importer-settings .chip-wrapper .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.bulk-event-importer-settings .keyword-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    background: #2271b1;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.bulk-event-importer-settings .keyword-chip .remove-chip {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: rgba(255,255,255,0.8);
+}
+
+.bulk-event-importer-settings .keyword-chip .remove-chip:hover {
+    color: #fff;
+}
+
+.bulk-event-importer-settings .chip-input {
+    width: 100%;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 4px 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+}
+
+.bulk-event-importer-settings .bei-field-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.bulk-event-importer-settings .bei-section {
+  max-width: 100%;
+  margin-bottom: 40px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #e2e4e7;
+}
+
+.bulk-event-importer-settings textarea {
+  width: 100%;
+  max-width: 100%;
+  font-size: 13px;
+}
+
+.bulk-event-importer-settings .bei-inline-field {
+  margin-top: 8px;
+}
+.bulk-event-importer-settings .bei-inline-field label {
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.bulk-event-importer-settings .bei-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: #f0f0f1;
+  color: #50575e;
+  border-radius: 3px;
+  padding: 2px 8px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.bulk-event-importer-settings .bei-optional {
+  font-weight: 400;
+  color: #757575;
+  font-size: 12px;
+}
+
+.bulk-event-importer-settings .bei-toggle {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.bulk-event-importer-settings .bei-toggle input {
+  margin-right: 8px;
+}
+
+/* Taxonomy builder */
+.bulk-event-importer-settings .bei-taxonomy-block {
+  border: 1px solid #c3c4c7;
+  background: #fbfbfc;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.bulk-event-importer-settings .bei-taxonomy-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+  margin-bottom: 14px;
+}
+
+.bulk-event-importer-settings .bei-taxonomy-header label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  font-size: 12px;
+  gap: 4px;
+}
+
+.bulk-event-importer-settings .bei-taxonomy-header input[type="text"] {
+  font-weight: 400;
+  min-width: 200px;
+}
+
+.bulk-event-importer-settings .bei-group-table {
+  margin-bottom: 10px;
+}
+
+.bulk-event-importer-settings .bei-group-table td {
+  vertical-align: top;
+  padding: 10px 8px;
+}
+
+.bulk-event-importer-settings .bei-group-term {
+  width: 100%;
+}
+
+.bulk-event-importer-settings .bei-remove-group,
+.bulk-event-importer-settings .bei-remove-extra {
+  color: #b32d2e;
+  text-decoration: none;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.bulk-event-importer-settings .bei-extra-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.bulk-event-importer-settings .bei-extra-row input {
+  max-width: 260px;
+}
+
+.bei-divider {
+  margin: 40px 0;
+}
+
+.bei-import-progress {
+  margin-top: 20px;
+  display: none;
+}
+
+.bei-progress-outer {
+  background: #dcdcde;
+  height: 12px;
+  width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.bei-progress-bar {
+  background: #00a32a;
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.bei-import-status {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #333;
+}
+
+.bulk-event-importer-settings .bei-skip-callout {
+  margin-top: 6px;
+  padding: 6px 10px;
+  border: 1px solid #c3c4c7;
+  background: #f6f7fb;
+  border-radius: 6px;
+}
+
+.bulk-event-importer-settings .bei-skip-title {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.bulk-event-importer-settings .bei-skip-keywords {
+  font-size: 12px;
+  opacity: 0.95;
+  word-break: break-word;
+}
