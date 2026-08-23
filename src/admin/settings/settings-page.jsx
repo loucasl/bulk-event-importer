@@ -4,13 +4,11 @@ import {
 	Notice,
 	Spinner,
 } from '@wordpress/components';
-import { DataForm } from '@wordpress/dataviews/wp';
 import { __ } from '@wordpress/i18n';
 import { FieldMappingSection, StaticMetaSection } from './field-mapping-section';
 import { GeocodingAdvancedFields } from './geocoding-fields';
 import {
 	getCoreSettingsFields,
-	getFormData,
 	getOptionalModuleFields,
 	getGeocodingModulesFormLayout,
 	getSettingsFormLayout,
@@ -18,6 +16,7 @@ import {
 	mergeFormData,
 } from './fields';
 import { ImportProgress } from './import-progress';
+import { SettingsForm } from './settings-form';
 import { TaxonomySection } from './taxonomy-section';
 import { useSettings } from './use-settings';
 import { countFeedUrls } from './utils';
@@ -60,10 +59,6 @@ export function SettingsPage( { nonce } ) {
 	);
 	const geocodingForm = useMemo( () => getGeocodingModulesFormLayout(), [] );
 	const staticMetaForm = useMemo( () => getStaticMetaFormLayout(), [] );
-	const formData = useMemo(
-		() => getFormData( settings ),
-		[ settings ]
-	);
 
 	const handleFormChange = ( edits ) => {
 		updateSettings( ( prev ) => mergeFormData( prev, edits ) );
@@ -115,8 +110,8 @@ export function SettingsPage( { nonce } ) {
 				</Notice>
 			) }
 
-			<DataForm
-				data={ formData }
+			<SettingsForm
+				data={ settings }
 				fields={ coreFields }
 				form={ coreForm }
 				onChange={ handleFormChange }
@@ -140,8 +135,8 @@ export function SettingsPage( { nonce } ) {
 						'bulk-event-importer'
 					) }
 				</p>
-				<DataForm
-					data={ formData }
+				<SettingsForm
+					data={ settings }
 					fields={ moduleFields }
 					form={ geocodingForm }
 					onChange={ handleFormChange }
@@ -152,8 +147,8 @@ export function SettingsPage( { nonce } ) {
 						onChange={ updateSettings }
 					/>
 				) }
-				<DataForm
-					data={ formData }
+				<SettingsForm
+					data={ settings }
 					fields={ moduleFields }
 					form={ staticMetaForm }
 					onChange={ handleFormChange }

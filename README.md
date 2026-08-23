@@ -4,7 +4,7 @@ A WordPress plugin that fetches external calendar feeds (RSS/ICS), normalizes th
 
 | | |
 |---|---|
-| **Version** | 2.2.0 |
+| **Version** | 2.2.1 |
 | **Requires WordPress** | 6.9+ |
 | **Tested up to** | 6.7 |
 | **Requires PHP** | 7.4+ |
@@ -65,6 +65,12 @@ Two hooks are available for site-specific behavior that does not belong in the s
 | `bei_after_upsert_event_post` | Action | Fires after every create/update; args: `$post_id`, `$event`, `$status`. Useful for linking to a related custom post type |
 
 ## Changelog
+
+### 2.2.1
+
+- Dropped `@wordpress/dataviews`. The settings page only used DataForm as a section wrapper after later PRs replaced every field editor with custom `@wordpress/components` controls
+- Admin bundle no longer ships DataViews table, filter, and pagination code
+- Removed leftover unused settings helpers (`defaultSettings`, unused discard path, DataForm-only form snapshot)
 
 ### 2.2.0
 
