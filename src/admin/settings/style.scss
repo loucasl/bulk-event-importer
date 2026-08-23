@@ -11,6 +11,10 @@
 		padding-top: 15px;
 		padding-bottom: 15px;
 	}
+
+	p.description {
+		max-width: none;
+	}
 }
 
 .bei-settings-toolbar {
@@ -44,7 +48,6 @@
 
 	> .description {
 		margin: 0 0 8px;
-		max-width: 42em;
 
 		+ .description {
 			margin-bottom: 20px;
@@ -290,6 +293,10 @@
 	flex-wrap: wrap;
 	gap: 8px;
 	margin-left: auto;
+}
+
+.bei-taxonomy-advanced {
+	margin-top: 16px;
 }
 
 .bei-extra-meta-rows {
