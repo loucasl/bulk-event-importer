@@ -114,39 +114,40 @@ function TaxonomyBlock( {
 					{ __( 'Add category', 'bulk-event-importer' ) }
 				</Button>
 				<div className="bei-taxonomy-actions-end">
-					{ showAddGroup && (
-						<Button
-							type="button"
-							variant="secondary"
-							className="bei-inline-button"
-							onClick={ onAddGroup }
-						>
-							{ __(
-								'Add another category group',
+					<div className="bei-taxonomy-actions-buttons">
+						{ showAddGroup && (
+							<Button
+								type="button"
+								variant="secondary"
+								className="bei-inline-button"
+								onClick={ onAddGroup }
+							>
+								{ __(
+									'Add another category group',
+									'bulk-event-importer'
+								) }
+							</Button>
+						) }
+						<RemoveButton
+							confirmMessage={ __(
+								'Remove this category group and all of its categories?',
 								'bulk-event-importer'
 							) }
-						</Button>
+							onConfirm={ onRemove }
+						>
+							{ __( 'Remove this group', 'bulk-event-importer' ) }
+						</RemoveButton>
+					</div>
+					{ showAddGroup && (
+						<p className="description bei-taxonomy-group-hint">
+							{ __(
+								'Use “Add another category group” only if events are also tagged another way, such as Audience.',
+								'bulk-event-importer'
+							) }
+						</p>
 					) }
-					<RemoveButton
-						confirmMessage={ __(
-							'Remove this category group and all of its categories?',
-							'bulk-event-importer'
-						) }
-						onConfirm={ onRemove }
-					>
-						{ __( 'Remove this group', 'bulk-event-importer' ) }
-					</RemoveButton>
 				</div>
 			</div>
-
-			{ showAddGroup && (
-				<p className="description bei-taxonomy-group-hint">
-					{ __(
-						'Use “Add another category group” only if events are also tagged another way, such as Audience.',
-						'bulk-event-importer'
-					) }
-				</p>
-			) }
 
 			<div className="bei-taxonomy-advanced">
 				<TextControl

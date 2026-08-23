@@ -19,6 +19,11 @@
 	.components-base-control__help {
 		margin-top: 8px;
 	}
+
+	// InputControl uses gap: 0 between a top label and the field.
+	.components-flex.components-input-control {
+		gap: 8px !important;
+	}
 }
 
 .bei-settings-toolbar {
@@ -71,10 +76,7 @@
 	gap: 0;
 }
 
-.bei-number-field {
-	max-width: 10rem;
-}
-
+.bei-number-field,
 .bei-settings-app .dataforms-layouts-regular__field .components-select-control {
 	max-width: 28rem;
 }
@@ -219,8 +221,8 @@
 	.bei-chips {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px;
-		margin-bottom: 10px;
+		gap: 10px 8px;
+		margin-bottom: 12px;
 	}
 
 	.bei-keyword-chip {
@@ -228,8 +230,8 @@
 		align-items: center;
 		gap: 6px;
 		padding: 4px 10px;
-		background: #f0f0f1;
-		border: 1px solid #dcdcde;
+		background: #fff;
+		border: 1px solid #c3c4c7;
 		border-radius: 12px;
 		font-size: 13px;
 		line-height: 1.35;
@@ -242,10 +244,6 @@
 		padding: 0 4px;
 		line-height: 1;
 		color: #50575e;
-	}
-
-	> .components-base-control {
-		max-width: 24rem;
 	}
 }
 
@@ -294,17 +292,14 @@
 	.bei-keyword-chips .bei-chips {
 		margin-bottom: 8px;
 	}
-
-	.bei-keyword-chips > .components-base-control {
-		max-width: none;
-	}
 }
 
-.bei-keyword-chips .components-base-control__label {
+.bei-keyword-chips .components-base-control__label,
+.bei-keyword-chips .components-input-control__label {
 	display: block;
 	padding-top: 15px;
 	margin-top: 0;
-	margin-bottom: 5px;
+	margin-bottom: 0;
 }
 
 .bei-row-actions {
@@ -316,21 +311,35 @@
 .bei-taxonomy-actions {
 	display: flex;
 	flex-wrap: wrap;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: space-between;
 	gap: 12px;
 	margin-top: 16px;
 }
 
 .bei-taxonomy-group-hint {
-	margin: 8px 0 0;
+	margin: 12px 0 0;
 }
 
 .bei-taxonomy-actions-end {
 	display: flex;
-	flex-wrap: wrap;
-	gap: 12px;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 8px;
 	margin-left: auto;
+}
+
+.bei-taxonomy-actions-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 12px;
+}
+
+.bei-taxonomy-actions-end .bei-taxonomy-group-hint {
+	margin: 0;
+	text-align: right;
+	max-width: 36rem;
 }
 
 .bei-taxonomy-advanced {
@@ -347,6 +356,10 @@
 
 .bei-settings-modules .components-text-control {
 	max-width: 32rem;
+}
+
+.bei-advanced-disclosure-body .components-text-control {
+	max-width: none;
 }
 
 .bei-extra-meta-rows {
