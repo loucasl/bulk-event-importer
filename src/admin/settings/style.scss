@@ -256,6 +256,7 @@
 	border: 1px solid #dcdcde;
 	border-radius: 2px;
 	scrollbar-gutter: stable;
+	overflow-anchor: none;
 
 	.widefat {
 		border: 0;
@@ -300,6 +301,52 @@
 		display: block;
 		margin: 2px 0 0;
 	}
+}
+
+.bei-import-issues {
+	margin: 0 0 12px;
+	padding: 12px 14px;
+	background: #fcf9e8;
+	border-left: 4px solid #dba617;
+}
+
+.bei-import-issues-title {
+	display: block;
+	margin: 0 0 10px;
+	font-size: 1em;
+}
+
+.bei-import-issue + .bei-import-issue {
+	margin-top: 12px;
+	padding-top: 12px;
+	border-top: 1px solid #f0e6b8;
+}
+
+.bei-import-issue-head {
+	font-weight: 600;
+}
+
+.bei-import-issue-count {
+	font-weight: 400;
+	color: #646970;
+}
+
+.bei-import-issue-why,
+.bei-import-issue-next {
+	margin: 4px 0 0;
+}
+
+.bei-import-issue-feeds {
+	margin: 8px 0 0;
+	padding-left: 18px;
+
+	li + li {
+		margin-top: 6px;
+	}
+}
+
+.bei-import-issue-more {
+	margin: 8px 0 0;
 }
 
 .bei-skip-callout {
