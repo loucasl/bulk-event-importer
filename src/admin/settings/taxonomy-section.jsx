@@ -12,7 +12,7 @@ import {
 } from '@wordpress/components';
 import { DataViews } from '@wordpress/dataviews/wp';
 import { __ } from '@wordpress/i18n';
-import { genGroupKey } from './utils';
+import { genGroupKey, getLocalPaginationInfo } from './utils';
 
 function KeywordTokens( { value, onChange } ) {
 	return (
@@ -155,6 +155,10 @@ function TaxonomyBlock( { taxonomy, taxIndex, onChange, onRemove, defaultOpen } 
 					onChangeView={ () => {} }
 					defaultLayouts={ defaultLayouts }
 					getItemId={ ( item ) => item.id }
+					paginationInfo={ getLocalPaginationInfo(
+						rows.length,
+						view.perPage
+					) }
 					actions={ [
 						{
 							id: 'remove',
