@@ -3,6 +3,40 @@
   max-width: 900px;
 }
 
+.bulk-event-importer-settings .bei-page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  margin: 0 0 24px;
+}
+
+.bulk-event-importer-settings .bei-page-header h1 {
+  margin: 0;
+  padding: 0;
+}
+
+.bulk-event-importer-settings .bei-import-now {
+  align-self: flex-end;
+  max-width: 100%;
+  text-align: right;
+}
+
+.bulk-event-importer-settings .bei-import-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.bulk-event-importer-settings .bei-import-hint {
+  margin: 8px 0 0;
+}
+
+.bulk-event-importer-settings .bei-import-now .bei-import-progress {
+  text-align: left;
+}
+
 .bulk-event-importer-settings .form-table th {
     width: 240px;
     vertical-align: top;
@@ -264,12 +298,8 @@
   max-width: 260px;
 }
 
-.bei-divider {
-  margin: 40px 0;
-}
-
 .bei-import-progress {
-  margin-top: 20px;
+  margin-top: 12px;
   display: none;
 }
 

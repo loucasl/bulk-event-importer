@@ -40,9 +40,11 @@ site-specific to belong in the shared codebase:
 == Changelog ==
 
 = 2.0.1 =
-* Importer Settings: optional modules (Allowlist Filter, Geocoding) now appear
-  in a top-of-page card grid with enable toggles that show or hide each
-  module's settings section.
+* Importer Settings: optional modules (Allowlist Filter, Geocoding) appear in a
+  card grid with enable toggles that show or hide each module's settings
+  section; the grid sits directly above those module sections.
+* Moved "Run Import Now" to the top right below the page title, and removed the
+  shared-code / per-site configuration intro paragraph.
 
 = 2.0.0 =
 * Unified codebase merging two previously-forked, site-specific versions.
