@@ -6,8 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 $bei_settings_blockers = bei_settings_page_blockers();
 ?>
 <div class="wrap bulk-event-importer-settings">
-    <h1><?php esc_html_e( 'Bulk Event Importer Settings', 'bulk-event-importer' ); ?></h1>
-
     <?php if ( $bei_settings_blockers ) : ?>
         <?php foreach ( $bei_settings_blockers as $bei_blocker_message ) : ?>
             <div class="notice notice-error">

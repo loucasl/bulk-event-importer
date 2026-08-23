@@ -1,10 +1,9 @@
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import {
 	TextareaControl,
-	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
+import { KeywordChips } from './keyword-chips';
 
 export function TextareaFieldEdit( { data, field, onChange, hideLabelFromVision } ) {
 	const { id, label, description } = field;
@@ -22,6 +21,7 @@ export function TextareaFieldEdit( { data, field, onChange, hideLabelFromVision 
 			value={ value }
 			onChange={ onChangeControl }
 			rows={ 6 }
+			__nextHasNoMarginBottom
 		/>
 	);
 }
@@ -44,76 +44,28 @@ export function ToggleFieldEdit( { data, field, onChange, hideLabelFromVision } 
 export function KeywordChipsEdit( { data, field, onChange, hideLabelFromVision } ) {
 	const { id, label, description } = field;
 	const keywords = field.getValue( { item: data } ) || [];
-	const [ input, setInput ] = useState( '' );
-
-	const addKeyword = useCallback(
-		( raw ) => {
-			const keyword = String( raw || '' ).trim();
-			if ( ! keyword ) {
-				return;
-			}
-			const lower = keywords.map( ( k ) => k.toLowerCase() );
-			if ( lower.includes( keyword.toLowerCase() ) ) {
-				return;
-			}
-			onChange( { [ id ]: [ ...keywords, keyword ] } );
-		},
-		[ id, keywords, onChange ]
-	);
-
-	const removeKeyword = useCallback(
-		( index ) => {
-			onChange( {
-				[ id ]: keywords.filter( ( _, i ) => i !== index ),
-			} );
-		},
-		[ id, keywords, onChange ]
-	);
 
 	return (
-		<div className="bei-keyword-chips">
+		<div className="bei-keyword-field">
 			{ ! hideLabelFromVision && label && (
 				<label className="components-base-control__label">
 					{ label }
 				</label>
 			) }
-			{ description && (
-				<p className="components-base-control__help">{ description }</p>
-			) }
-			<div className="bei-chips">
-				{ keywords.map( ( keyword, index ) => (
-					<span key={ `${ keyword }-${ index }` } className="bei-keyword-chip">
-						{ keyword }
-						<button
-							type="button"
-							className="bei-remove-chip"
-							onClick={ () => removeKeyword( index ) }
-							aria-label={ __( 'Remove keyword', 'bulk-event-importer' ) }
-						>
-							&times;
-						</button>
-					</span>
-				) ) }
-			</div>
-			<TextControl
-				label={
+			<KeywordChips
+				keywords={ keywords }
+				onChange={ ( next ) => onChange( { [ id ]: next } ) }
+				description={ description }
+				addLabel={
 					hideLabelFromVision
-						? undefined
-						: __( 'Add keyword', 'bulk-event-importer' )
+						? __( 'Add keyword', 'bulk-event-importer' )
+						: undefined
 				}
-				value={ input }
-				onChange={ setInput }
-				onKeyDown={ ( event ) => {
-					if ( event.key === 'Enter' || event.key === ',' ) {
-						event.preventDefault();
-						addKeyword( input );
-						setInput( '' );
-					}
-				} }
-				placeholder={ __( 'Type and press Enter', 'bulk-event-importer' ) }
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
 			/>
 		</div>
 	);
+}
+
+export function BlockedKeywordsEdit( props ) {
+	return <KeywordChipsEdit { ...props } hideLabelFromVision />;
 }

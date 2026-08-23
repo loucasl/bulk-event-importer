@@ -1,15 +1,27 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import {
+	BlockedKeywordsEdit,
 	KeywordChipsEdit,
 	TextareaFieldEdit,
 	ToggleFieldEdit,
 } from './form-controls';
 
+const MODULE_FIELD_IDS = [
+	'allowlist_enabled',
+	'allowed_keywords',
+	'geocoding_enabled',
+	'geocoding_address_metas',
+	'geocoding_lat_meta',
+	'geocoding_lng_meta',
+	'geocoding_hash_meta',
+	'geocoding_country_suffix',
+];
+
 export function getSettingsFields() {
 	return [
 		{
 			id: 'feed_urls',
-			label: __( 'Feed URLs', 'bulk-event-importer' ),
+			label: __( 'List of URLs', 'bulk-event-importer' ),
 			type: 'text',
 			description: __(
 				'One feed per line: Label | URL or Label | URL | type (type is ics or rss, optional). Lines starting with # are ignored.',
@@ -78,13 +90,13 @@ export function getSettingsFields() {
 		},
 		{
 			id: 'blocked_keywords',
-			label: __( 'Keywords', 'bulk-event-importer' ),
+			label: '',
 			type: 'text',
 			description: __(
 				'Events whose title contains any of these are skipped on import and removed if already published.',
 				'bulk-event-importer'
 			),
-			Edit: KeywordChipsEdit,
+			Edit: BlockedKeywordsEdit,
 		},
 		{
 			id: 'allowlist_enabled',
@@ -154,14 +166,35 @@ export function getSettingsFields() {
 	];
 }
 
-export function getSettingsFormLayout() {
+export function getCoreSettingsFields() {
+	return getSettingsFields().filter(
+		( field ) => ! MODULE_FIELD_IDS.includes( field.id )
+	);
+}
+
+export function getOptionalModuleFields() {
+	return getSettingsFields().filter( ( field ) =>
+		MODULE_FIELD_IDS.includes( field.id )
+	);
+}
+
+export function getSettingsFormLayout( feedUrlCount = 0 ) {
+	const feedSectionLabel =
+		feedUrlCount > 0
+			? sprintf(
+					/* translators: %d: number of configured feed URLs */
+					__( 'Feed URLs (%d)', 'bulk-event-importer' ),
+					feedUrlCount
+			  )
+			: __( 'Feed URLs', 'bulk-event-importer' );
+
 	return {
 		type: 'regular',
 		labelPosition: 'top',
 		fields: [
 			{
 				id: 'section_feeds',
-				label: __( 'Feed URLs', 'bulk-event-importer' ),
+				label: feedSectionLabel,
 				children: [ 'feed_urls', 'default_feed_type' ],
 			},
 			{
@@ -180,21 +213,15 @@ export function getSettingsFormLayout() {
 				label: __( 'Blocked Keywords', 'bulk-event-importer' ),
 				children: [ 'blocked_keywords' ],
 			},
-			{
-				id: 'section_modules',
-				label: __( 'Optional Modules', 'bulk-event-importer' ),
-				children: [
-					'allowlist_enabled',
-					'allowed_keywords',
-					'geocoding_enabled',
-					'geocoding_address_metas',
-					'geocoding_lat_meta',
-					'geocoding_lng_meta',
-					'geocoding_hash_meta',
-					'geocoding_country_suffix',
-				],
-			},
 		],
+	};
+}
+
+export function getOptionalModulesFormLayout() {
+	return {
+		type: 'regular',
+		labelPosition: 'top',
+		fields: MODULE_FIELD_IDS,
 	};
 }
 
