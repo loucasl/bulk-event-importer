@@ -1,10 +1,10 @@
 === Bulk Event Importer ===
 Contributors: reddragoncreative
 Tags: events, import, ics, rss, jetengine
-Requires at least: 6.0
-Tested up to: 6.7
+Requires at least: 6.9
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.0.1
+Stable tag: 2.1.0
 License: GPLv2 or later
 
 Fetches external calendar feeds (RSS/ICS), normalizes them, and creates/updates
@@ -38,6 +38,15 @@ site-specific to belong in the shared codebase:
   integration (e.g. auto-linking to a related custom post type).
 
 == Changelog ==
+
+= 2.1.0 =
+* Rebuilt Importer Settings as a React admin page using WordPress DataForm and
+  DataViews (modern admin design language). Settings are loaded and saved via
+  REST; the same option array and sanitize logic are unchanged, so existing
+  saved settings are preserved with no migration step.
+* Added npm build toolchain (@wordpress/scripts). Prebuilt assets ship in
+  build/; run npm install && npm run build after changing src/admin/settings/.
+* Removed legacy PHP form template admin CSS/JS for the settings page.
 
 = 2.0.1 =
 * Importer Settings: optional modules (Allowlist Filter, Geocoding) appear in a

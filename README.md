@@ -4,8 +4,8 @@ A WordPress plugin that fetches external calendar feeds (RSS/ICS), normalizes th
 
 | | |
 |---|---|
-| **Version** | 2.0.1 |
-| **Requires WordPress** | 6.0+ |
+| **Version** | 2.1.0 |
+| **Requires WordPress** | 6.9+ |
 | **Tested up to** | 6.7 |
 | **Requires PHP** | 7.4+ |
 | **License** | [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html) |
@@ -25,7 +25,20 @@ A WordPress plugin that fetches external calendar feeds (RSS/ICS), normalizes th
 
 1. Copy the plugin folder into `wp-content/plugins/` (or install from this repository).
 2. Activate **Bulk Event Importer** in the WordPress admin.
-3. Open **Settings → Importer Settings** and configure feeds, taxonomies, field mapping, and other options for your site.
+3. Open **Events → Importer Settings** and configure feeds, taxonomies, field mapping, and other options for your site.
+
+## Development
+
+The settings page is built with `@wordpress/scripts`. Precompiled assets are committed under `build/` so sites can deploy without Node.js.
+
+To change the settings UI:
+
+```bash
+npm install
+npm run build
+```
+
+Source lives in `src/admin/settings/`. Settings are exposed at `GET/PUT /wp-json/bulk-event-importer/v1/settings` and still persist to the `bulk_event_importer_settings` option via the existing sanitizer.
 
 ## Configuration
 
@@ -52,6 +65,13 @@ Two hooks are available for site-specific behavior that does not belong in the s
 | `bei_after_upsert_event_post` | Action | Fires after every create/update; args: `$post_id`, `$event`, `$status`. Useful for linking to a related custom post type |
 
 ## Changelog
+
+### 2.1.0
+
+- Rebuilt Importer Settings with WordPress DataForm and DataViews (React admin UI)
+- REST settings endpoint; same option storage and sanitize logic (no settings migration)
+- npm / `@wordpress/scripts` build; prebuilt assets in `build/`
+- Requires WordPress 6.9+
 
 ### 2.0.1
 

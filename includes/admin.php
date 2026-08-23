@@ -10,30 +10,67 @@ add_action( 'admin_menu', [ 'Bulk_Event_Importer', 'register_admin_menu' ] );
 add_action( 'admin_init', [ 'Bulk_Event_Importer', 'register_settings' ] );
 
 /**
- * Admin assets (CSS/JS) for the plugin settings page only.
+ * Admin assets for the React settings page.
  */
 add_action( 'admin_enqueue_scripts', function( $hook ) {
     if ( $hook !== 'events_page_bulk-event-importer-settings' ) {
         return;
     }
 
-    // Bust browser cache on file change so Push-to-Deploy / manual updates
-    // pick up CSS/JS without requiring a plugin version bump.
-    $css_path = BEI_PLUGIN_DIR . 'assets/admin.css';
-    $js_path  = BEI_PLUGIN_DIR . 'assets/admin.js';
-    $css_ver  = file_exists( $css_path ) ? (string) filemtime( $css_path ) : BEI_VERSION;
-    $js_ver   = file_exists( $js_path ) ? (string) filemtime( $js_path ) : BEI_VERSION;
+    $script_path = BEI_PLUGIN_DIR . 'build/settings.js';
+    $style_path  = BEI_PLUGIN_DIR . 'build/style-index.css';
+    $asset_path  = BEI_PLUGIN_DIR . 'build/settings.asset.php';
 
-    wp_enqueue_style( 'bulk-event-importer-admin', BEI_PLUGIN_URL . 'assets/admin.css', [], $css_ver );
-    wp_enqueue_script( 'bulk-event-importer-admin', BEI_PLUGIN_URL . 'assets/admin.js', [], $js_ver, true );
+    if ( ! file_exists( $script_path ) ) {
+        return;
+    }
+
+    $asset = file_exists( $asset_path )
+        ? include $asset_path
+        : [
+            'dependencies' => [
+                'wp-element',
+                'wp-components',
+                'wp-i18n',
+                'wp-api-fetch',
+            ],
+            'version'      => BEI_VERSION,
+        ];
+
+    $script_ver = file_exists( $script_path )
+        ? (string) filemtime( $script_path )
+        : $asset['version'];
+
+    wp_enqueue_script(
+        'bulk-event-importer-settings',
+        BEI_PLUGIN_URL . 'build/settings.js',
+        $asset['dependencies'],
+        $script_ver,
+        true
+    );
+
+    if ( file_exists( $style_path ) ) {
+        wp_enqueue_style(
+            'bulk-event-importer-settings',
+            BEI_PLUGIN_URL . 'build/style-index.css',
+            [ 'wp-components' ],
+            (string) filemtime( $style_path )
+        );
+    }
 
     wp_localize_script(
-        'bulk-event-importer-admin',
+        'bulk-event-importer-settings',
         'bulkEventImporter',
         [
-            'nonce'      => wp_create_nonce( 'bulk_event_import' ),
-            'optionName' => Bulk_Event_Importer::OPTION_SETTINGS,
+            'nonce'   => wp_create_nonce( 'bulk_event_import' ),
+            'restUrl' => esc_url_raw( rest_url( 'bulk-event-importer/v1/settings' ) ),
         ]
+    );
+
+    wp_add_inline_script(
+        'bulk-event-importer-settings',
+        'wp.apiFetch.use( wp.apiFetch.createNonceMiddleware( ' . wp_json_encode( wp_create_nonce( 'wp_rest' ) ) . ' ) );',
+        'before'
     );
 } );
 
