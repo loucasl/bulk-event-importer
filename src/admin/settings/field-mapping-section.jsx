@@ -8,6 +8,7 @@ import {
 } from '@wordpress/components';
 import { DataViews } from '@wordpress/dataviews/wp';
 import { __ } from '@wordpress/i18n';
+import { getLocalPaginationInfo } from './utils';
 
 export function FieldMappingSection( { fieldMap, onChange } ) {
 	const isSplit = fieldMap.date_mode === 'split';
@@ -220,6 +221,10 @@ export function StaticMetaSection( { extraStaticMeta, onChange } ) {
 				onChangeView={ () => {} }
 				defaultLayouts={ { table: {} } }
 				getItemId={ ( item ) => item.id }
+				paginationInfo={ getLocalPaginationInfo(
+					rows.length,
+					view.perPage
+				) }
 				actions={ [
 					{
 						id: 'remove',
