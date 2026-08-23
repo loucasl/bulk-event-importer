@@ -6,17 +6,14 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { KeywordChips } from './keyword-chips';
+import { RemoveButton } from './remove-button';
 import { genGroupKey } from './utils';
 
-function TaxonomyBlock( { taxonomy, onChange, onRemove } ) {
+function TaxonomyBlock( { taxonomy, onChange, onRemove, onAddTaxonomy, showAddTaxonomy } ) {
 	const groups = taxonomy.groups || [];
 
 	return (
 		<div className="bei-taxonomy-block">
-			<h3 className="bei-taxonomy-block-title">
-				{ taxonomy.label || __( 'New taxonomy', 'bulk-event-importer' ) }
-			</h3>
-
 			<Flex gap={ 4 } wrap className="bei-taxonomy-meta">
 				<FlexBlock>
 					<TextControl
@@ -37,7 +34,7 @@ function TaxonomyBlock( { taxonomy, onChange, onRemove } ) {
 				<FlexBlock>
 					<TextControl
 						label={ __(
-							'Default term (optional)',
+							'Default category (optional)',
 							'bulk-event-importer'
 						) }
 						value={ taxonomy.default_term }
@@ -57,10 +54,10 @@ function TaxonomyBlock( { taxonomy, onChange, onRemove } ) {
 				<thead>
 					<tr>
 						<th style={ { width: '22%' } }>
-							{ __( 'Term name', 'bulk-event-importer' ) }
+							{ __( 'Category', 'bulk-event-importer' ) }
 						</th>
 						<th>{ __( 'Keywords', 'bulk-event-importer' ) }</th>
-						<th style={ { width: '72px' } } />
+						<th style={ { width: '100px' } } />
 					</tr>
 				</thead>
 				<tbody>
@@ -93,11 +90,12 @@ function TaxonomyBlock( { taxonomy, onChange, onRemove } ) {
 								/>
 							</td>
 							<td className="bei-row-actions">
-								<Button
-									type="button"
-									variant="link"
-									isDestructive
-									onClick={ () =>
+								<RemoveButton
+									confirmMessage={ __(
+										'Remove this category and its keywords?',
+										'bulk-event-importer'
+									) }
+									onConfirm={ () =>
 										onChange( {
 											...taxonomy,
 											groups: groups.filter(
@@ -105,9 +103,7 @@ function TaxonomyBlock( { taxonomy, onChange, onRemove } ) {
 											),
 										} )
 									}
-								>
-									{ __( 'Remove', 'bulk-event-importer' ) }
-								</Button>
+								/>
 							</td>
 						</tr>
 					) ) }
@@ -118,6 +114,7 @@ function TaxonomyBlock( { taxonomy, onChange, onRemove } ) {
 				<Button
 					type="button"
 					variant="secondary"
+					className="bei-inline-button"
 					onClick={ () =>
 						onChange( {
 							...taxonomy,
@@ -134,23 +131,53 @@ function TaxonomyBlock( { taxonomy, onChange, onRemove } ) {
 				>
 					{ __( 'Add category', 'bulk-event-importer' ) }
 				</Button>
-				<Button
-					type="button"
-					variant="link"
-					isDestructive
-					onClick={ onRemove }
-				>
-					{ __( 'Remove taxonomy', 'bulk-event-importer' ) }
-				</Button>
+				<div className="bei-taxonomy-actions-end">
+					{ showAddTaxonomy && (
+						<Button
+							type="button"
+							variant="secondary"
+							className="bei-inline-button"
+							onClick={ onAddTaxonomy }
+						>
+							{ __( 'Add taxonomy', 'bulk-event-importer' ) }
+						</Button>
+					) }
+					<RemoveButton
+						confirmMessage={ __(
+							'Remove this taxonomy and all of its categories?',
+							'bulk-event-importer'
+						) }
+						onConfirm={ onRemove }
+					>
+						{ __( 'Remove taxonomy', 'bulk-event-importer' ) }
+					</RemoveButton>
+				</div>
 			</div>
 		</div>
 	);
 }
 
+function emptyTaxonomy() {
+	return {
+		slug: '',
+		label: '',
+		default_term: '',
+		groups: [],
+	};
+}
+
 export function TaxonomySection( { taxonomies, onChange } ) {
+	const list = taxonomies || [];
+	const heading =
+		list.length === 1 && list[ 0 ].label
+			? list[ 0 ].label
+			: __( 'Event Categories', 'bulk-event-importer' );
+
+	const addTaxonomy = () => onChange( [ ...list, emptyTaxonomy() ] );
+
 	return (
 		<section className="bei-settings-section bei-settings-taxonomies">
-			<h2>{ __( 'Categories & Taxonomies', 'bulk-event-importer' ) }</h2>
+			<h2>{ heading }</h2>
 			<p className="description">
 				{ __(
 					'Choose which categories events are sorted into based on keywords found in the event title. Each site sets up its own categories here.',
@@ -159,41 +186,33 @@ export function TaxonomySection( { taxonomies, onChange } ) {
 			</p>
 
 			<div className="bei-taxonomy-list">
-				{ ( taxonomies || [] ).map( ( tax, index ) => (
+				{ list.map( ( tax, index ) => (
 					<TaxonomyBlock
 						key={ `tax-${ index }-${ tax.slug || 'new' }` }
 						taxonomy={ tax }
 						onChange={ ( updated ) => {
-							const next = [ ...taxonomies ];
+							const next = [ ...list ];
 							next[ index ] = updated;
 							onChange( next );
 						} }
 						onRemove={ () => {
-							onChange(
-								taxonomies.filter( ( _, i ) => i !== index )
-							);
+							onChange( list.filter( ( _, i ) => i !== index ) );
 						} }
+						onAddTaxonomy={ addTaxonomy }
+						showAddTaxonomy={ index === list.length - 1 }
 					/>
 				) ) }
 
-				<Button
-					type="button"
-					variant="secondary"
-					className="bei-inline-button"
-					onClick={ () =>
-						onChange( [
-							...( taxonomies || [] ),
-							{
-								slug: '',
-								label: '',
-								default_term: '',
-								groups: [],
-							},
-						] )
-					}
-				>
-					{ __( 'Add taxonomy', 'bulk-event-importer' ) }
-				</Button>
+				{ list.length === 0 && (
+					<Button
+						type="button"
+						variant="secondary"
+						className="bei-inline-button"
+						onClick={ addTaxonomy }
+					>
+						{ __( 'Add taxonomy', 'bulk-event-importer' ) }
+					</Button>
+				) }
 			</div>
 		</section>
 	);

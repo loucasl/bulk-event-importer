@@ -146,12 +146,14 @@ export function SettingsPage( { nonce } ) {
 					form={ modulesForm }
 					onChange={ handleFormChange }
 				/>
-				<StaticMetaSection
-					extraStaticMeta={ settings.field_map?.extra_static_meta || [] }
-					onChange={ ( extra_static_meta ) =>
-						updateFieldMap( { extra_static_meta } )
-					}
-				/>
+				{ settings.static_meta_enabled && (
+					<StaticMetaSection
+						extraStaticMeta={ settings.field_map?.extra_static_meta || [] }
+						onChange={ ( extra_static_meta ) =>
+							updateFieldMap( { extra_static_meta } )
+						}
+					/>
+				) }
 			</section>
 
 			<div className="bei-settings-save-footer">

@@ -96,6 +96,9 @@ function bei_settings_to_rest( array $options ) {
         'allowlist_enabled'    => ! empty( $options['allowlist_enabled'] ),
         'allowed_keywords'     => bei_rest_csv_to_array( $options['allowed_keywords'] ?? '' ),
         'geocoding_enabled'    => ! empty( $options['geocoding_enabled'] ),
+        'static_meta_enabled'  => array_key_exists( 'static_meta_enabled', $options )
+            ? ! empty( $options['static_meta_enabled'] )
+            : ! empty( $field_map['extra_static_meta'] ),
         'geocoding_address_metas'   => (string) ( $options['geocoding_address_metas'] ?? '' ),
         'geocoding_lat_meta'        => (string) ( $options['geocoding_lat_meta'] ?? '' ),
         'geocoding_lng_meta'        => (string) ( $options['geocoding_lng_meta'] ?? '' ),
@@ -128,6 +131,7 @@ function bei_settings_from_rest( array $data ) {
         'allowlist_enabled'   => ! empty( $data['allowlist_enabled'] ) ? '1' : '',
         'allowed_keywords'    => bei_rest_array_to_csv( $data['allowed_keywords'] ?? [] ),
         'geocoding_enabled'   => ! empty( $data['geocoding_enabled'] ) ? '1' : '',
+        'static_meta_enabled' => ! empty( $data['static_meta_enabled'] ) ? '1' : '',
         'geocoding_address_metas'  => (string) ( $data['geocoding_address_metas'] ?? '' ),
         'geocoding_lat_meta'       => (string) ( $data['geocoding_lat_meta'] ?? '' ),
         'geocoding_lng_meta'       => (string) ( $data['geocoding_lng_meta'] ?? '' ),

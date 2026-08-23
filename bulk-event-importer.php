@@ -340,6 +340,9 @@ class Bulk_Event_Importer {
 
         // --- Geocoding module ---
         $output['geocoding_enabled'] = ! empty( $input['geocoding_enabled'] ) ? '1' : '';
+        if ( isset( $input['static_meta_enabled'] ) ) {
+            $output['static_meta_enabled'] = ! empty( $input['static_meta_enabled'] ) ? '1' : '';
+        }
         foreach ( [ 'geocoding_address_metas', 'geocoding_lat_meta', 'geocoding_lng_meta', 'geocoding_hash_meta', 'geocoding_country_suffix' ] as $gk ) {
             if ( isset( $input[ $gk ] ) ) {
                 $output[ $gk ] = sanitize_text_field( $input[ $gk ] );

@@ -33,6 +33,7 @@
 		margin: 0 0 8px;
 		font-size: 1.2em;
 		font-weight: 600;
+		line-height: 1.3;
 	}
 
 	> .description {
@@ -40,17 +41,25 @@
 	}
 }
 
-.bei-settings-modules {
-	.bei-static-meta-block {
-		margin-top: 24px;
-		padding-top: 20px;
-		border-top: 1px solid #e0e0e0;
-	}
+.bei-settings-app .dataforms-layouts-regular__header {
+	margin: 28px 0 8px;
 
-	h3 {
-		margin: 0 0 8px;
-		font-size: 1.05em;
+	.components-heading,
+	h2 {
+		margin: 0;
+		font-size: 1.2em !important;
 		font-weight: 600;
+		line-height: 1.3;
+	}
+}
+
+.bei-settings-app .dataforms-layouts-regular__header:first-child {
+	margin-top: 8px;
+}
+
+.bei-settings-modules {
+	.bei-static-meta-fields {
+		margin-top: 8px;
 	}
 }
 
@@ -203,19 +212,32 @@
 	.bei-keyword-chips .bei-chips {
 		margin-bottom: 4px;
 	}
+
+	.bei-keyword-chips .components-base-control {
+		margin-top: 12px;
+	}
 }
 
 .bei-row-actions {
 	vertical-align: top;
 	text-align: right;
+	white-space: nowrap;
 }
 
 .bei-taxonomy-actions {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 8px 16px;
 	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
 	margin-top: 12px;
+}
+
+.bei-taxonomy-actions-end {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-left: auto;
 }
 
 .bei-extra-meta-rows {
@@ -234,8 +256,7 @@
 		margin-bottom: 0;
 	}
 
-	.components-button.is-link {
+	.components-button.is-destructive {
 		margin-top: 6px;
-		min-width: 24px;
 	}
 }

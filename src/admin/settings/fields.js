@@ -18,6 +18,7 @@ const MODULE_FIELD_IDS = [
 	'geocoding_lng_meta',
 	'geocoding_hash_meta',
 	'geocoding_country_suffix',
+	'static_meta_enabled',
 ];
 
 export function getSettingsFields() {
@@ -168,6 +169,16 @@ export function getSettingsFields() {
 			isVisible: ( item ) => !! item.geocoding_enabled,
 			Edit: TextFieldEdit,
 		},
+		{
+			id: 'static_meta_enabled',
+			label: __( 'Fixed event fields', 'bulk-event-importer' ),
+			type: 'integer',
+			description: __(
+				'When enabled, the importer can set the same field value on every imported event — for example a default button label. Most sites can leave this off.',
+				'bulk-event-importer'
+			),
+			Edit: ToggleFieldEdit,
+		},
 	];
 }
 
@@ -251,14 +262,23 @@ export function getFormData( settings ) {
 		geocoding_lng_meta: settings.geocoding_lng_meta,
 		geocoding_hash_meta: settings.geocoding_hash_meta,
 		geocoding_country_suffix: settings.geocoding_country_suffix,
+		static_meta_enabled: !! settings.static_meta_enabled,
 	};
 }
 
 export function mergeFormData( settings, formData ) {
-	return {
+	const next = {
 		...settings,
 		...formData,
-		allowlist_enabled: !! formData.allowlist_enabled,
-		geocoding_enabled: !! formData.geocoding_enabled,
 	};
+
+	[ 'allowlist_enabled', 'geocoding_enabled', 'static_meta_enabled' ].forEach(
+		( key ) => {
+			if ( Object.prototype.hasOwnProperty.call( formData, key ) ) {
+				next[ key ] = !! formData[ key ];
+			}
+		}
+	);
+
+	return next;
 }

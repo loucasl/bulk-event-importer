@@ -250,9 +250,14 @@ function bei_upsert_event_post( $event ) {
 
     // Any static meta the site wants set on every create/update (e.g. a
     // "button-text" or "ticketed" flag field JetEngine expects).
-    foreach ( (array) ( $field_map['extra_static_meta'] ?? [] ) as $extra ) {
-        if ( ! empty( $extra['key'] ) ) {
-            bei_write_meta_if_changed( $post_id, $extra['key'], $extra['value'] ?? '' );
+    $static_meta_enabled = array_key_exists( 'static_meta_enabled', $options )
+        ? ! empty( $options['static_meta_enabled'] )
+        : ! empty( $field_map['extra_static_meta'] );
+    if ( $static_meta_enabled ) {
+        foreach ( (array) ( $field_map['extra_static_meta'] ?? [] ) as $extra ) {
+            if ( ! empty( $extra['key'] ) ) {
+                bei_write_meta_if_changed( $post_id, $extra['key'], $extra['value'] ?? '' );
+            }
         }
     }
 

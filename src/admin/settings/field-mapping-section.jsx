@@ -4,6 +4,7 @@ import {
 	TextControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import { RemoveButton } from './remove-button';
 
 function MapField( { label, value, onChange, className = '' } ) {
 	return (
@@ -125,14 +126,7 @@ export function StaticMetaSection( { extraStaticMeta, onChange } ) {
 	const rows = extraStaticMeta || [];
 
 	return (
-		<div className="bei-static-meta-block">
-			<h3>{ __( 'Fixed event fields', 'bulk-event-importer' ) }</h3>
-			<p className="description">
-				{ __(
-					'Set the same JetEngine field value on every imported event — for example, a default button label or a "ticketed: no" flag. Most sites can leave this empty.',
-					'bulk-event-importer'
-				) }
-			</p>
+		<div className="bei-static-meta-fields">
 			<div className="bei-extra-meta-rows">
 				{ rows.map( ( row, index ) => (
 					<div className="bei-extra-row" key={ `extra-${ index }` }>
@@ -166,11 +160,12 @@ export function StaticMetaSection( { extraStaticMeta, onChange } ) {
 							__next40pxDefaultSize
 							__nextHasNoMarginBottom
 						/>
-						<Button
-							type="button"
-							variant="link"
-							isDestructive
-							onClick={ () =>
+						<RemoveButton
+							confirmMessage={ __(
+								'Remove this fixed field?',
+								'bulk-event-importer'
+							) }
+							onConfirm={ () =>
 								onChange(
 									rows.filter( ( _, i ) => i !== index )
 								)
@@ -180,8 +175,8 @@ export function StaticMetaSection( { extraStaticMeta, onChange } ) {
 								'bulk-event-importer'
 							) }
 						>
-							&times;
-						</Button>
+							{ __( 'Remove', 'bulk-event-importer' ) }
+						</RemoveButton>
 					</div>
 				) ) }
 			</div>
