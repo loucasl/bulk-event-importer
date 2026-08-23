@@ -12,8 +12,9 @@ import {
 	getCoreSettingsFields,
 	getFormData,
 	getOptionalModuleFields,
-	getOptionalModulesFormLayout,
+	getGeocodingModulesFormLayout,
 	getSettingsFormLayout,
+	getStaticMetaFormLayout,
 	mergeFormData,
 } from './fields';
 import { ImportProgress } from './import-progress';
@@ -57,7 +58,8 @@ export function SettingsPage( { nonce } ) {
 		() => getSettingsFormLayout( feedUrlCount ),
 		[ feedUrlCount ]
 	);
-	const modulesForm = useMemo( () => getOptionalModulesFormLayout(), [] );
+	const geocodingForm = useMemo( () => getGeocodingModulesFormLayout(), [] );
+	const staticMetaForm = useMemo( () => getStaticMetaFormLayout(), [] );
 	const formData = useMemo(
 		() => getFormData( settings ),
 		[ settings ]
@@ -141,7 +143,7 @@ export function SettingsPage( { nonce } ) {
 				<DataForm
 					data={ formData }
 					fields={ moduleFields }
-					form={ modulesForm }
+					form={ geocodingForm }
 					onChange={ handleFormChange }
 				/>
 				{ settings.geocoding_enabled && (
@@ -150,6 +152,12 @@ export function SettingsPage( { nonce } ) {
 						onChange={ updateSettings }
 					/>
 				) }
+				<DataForm
+					data={ formData }
+					fields={ moduleFields }
+					form={ staticMetaForm }
+					onChange={ handleFormChange }
+				/>
 				{ settings.static_meta_enabled && (
 					<StaticMetaSection
 						extraStaticMeta={ settings.field_map?.extra_static_meta || [] }

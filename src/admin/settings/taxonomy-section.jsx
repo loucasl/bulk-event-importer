@@ -139,6 +139,15 @@ function TaxonomyBlock( {
 				</div>
 			</div>
 
+			{ showAddGroup && (
+				<p className="description bei-taxonomy-group-hint">
+					{ __(
+						'Use “Add another category group” only if events are also tagged another way, such as Audience.',
+						'bulk-event-importer'
+					) }
+				</p>
+			) }
+
 			<div className="bei-taxonomy-advanced">
 				<TextControl
 					label={ __(
@@ -190,6 +199,10 @@ function TaxonomyBlock( {
 								onChange={ ( label ) =>
 									onChange( { ...taxonomy, label } )
 								}
+								help={ __(
+									'Shown as the heading for this category group.',
+									'bulk-event-importer'
+								) }
 								__next40pxDefaultSize
 							/>
 						</FlexBlock>
@@ -227,12 +240,6 @@ export function TaxonomySection( { taxonomies, onChange } ) {
 					'bulk-event-importer'
 				) }
 			</p>
-			<p className="description">
-				{ __(
-					'Use “Add another category group” only if events are also tagged another way, such as Audience.',
-					'bulk-event-importer'
-				) }
-			</p>
 
 			<div className="bei-taxonomy-list">
 				{ list.map( ( tax, index ) => (
@@ -254,17 +261,25 @@ export function TaxonomySection( { taxonomies, onChange } ) {
 				) ) }
 
 				{ list.length === 0 && (
-					<Button
-						type="button"
-						variant="secondary"
-						className="bei-inline-button"
-						onClick={ addGroup }
-					>
-						{ __(
-							'Add another category group',
-							'bulk-event-importer'
-						) }
-					</Button>
+					<>
+						<Button
+							type="button"
+							variant="secondary"
+							className="bei-inline-button"
+							onClick={ addGroup }
+						>
+							{ __(
+								'Add another category group',
+								'bulk-event-importer'
+							) }
+						</Button>
+						<p className="description bei-taxonomy-group-hint">
+							{ __(
+								'Use “Add another category group” only if events are also tagged another way, such as Audience.',
+								'bulk-event-importer'
+							) }
+						</p>
+					</>
 				) }
 			</div>
 		</section>

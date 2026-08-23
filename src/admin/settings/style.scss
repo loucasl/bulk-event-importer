@@ -59,8 +59,12 @@
 	}
 }
 
+.bei-settings-app .components-v-stack:has(> .dataforms-layouts-regular__header) {
+	gap: 0;
+}
+
 .bei-settings-app .dataforms-layouts-regular__header {
-	margin: 48px 0 16px;
+	margin: 48px 0 0;
 	padding-top: 32px;
 	border-top: 1px solid #dcdcde;
 
@@ -136,7 +140,8 @@
 }
 
 .bei-geocoding-advanced {
-	margin-top: 8px;
+	margin-top: 4px;
+	margin-bottom: 20px;
 }
 
 .bei-import-progress {
@@ -269,7 +274,8 @@
 
 .bei-keyword-chips .components-base-control__label {
 	display: block;
-	margin-top: 3px;
+	padding-top: 15px;
+	margin-top: 0;
 	margin-bottom: 5px;
 }
 
@@ -286,6 +292,10 @@
 	justify-content: space-between;
 	gap: 8px;
 	margin-top: 12px;
+}
+
+.bei-taxonomy-group-hint {
+	margin: 8px 0 0;
 }
 
 .bei-taxonomy-actions-end {

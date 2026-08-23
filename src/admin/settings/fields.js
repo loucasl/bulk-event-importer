@@ -229,12 +229,22 @@ export function getSettingsFormLayout( feedUrlCount = 0 ) {
 	};
 }
 
-export function getOptionalModulesFormLayout() {
+export function getOptionalModulesFormLayout( fieldIds = MODULE_FIELD_IDS ) {
 	return {
 		type: 'regular',
 		labelPosition: 'top',
-		fields: MODULE_FIELD_IDS,
+		fields: fieldIds,
 	};
+}
+
+export function getGeocodingModulesFormLayout() {
+	return getOptionalModulesFormLayout(
+		MODULE_FIELD_IDS.filter( ( id ) => id !== 'static_meta_enabled' )
+	);
+}
+
+export function getStaticMetaFormLayout() {
+	return getOptionalModulesFormLayout( [ 'static_meta_enabled' ] );
 }
 
 export function getFormData( settings ) {
