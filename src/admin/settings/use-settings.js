@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
-import { cloneSettings, defaultSettings, settingsEqual } from './utils';
+import { cloneSettings, settingsEqual } from './utils';
 
 export function useSettings() {
 	const [ settings, setSettings ] = useState( null );
@@ -20,8 +20,8 @@ export function useSettings() {
 			setSaved( cloneSettings( data ) );
 		} catch ( err ) {
 			setError( err?.message || 'Failed to load settings.' );
-			setSettings( defaultSettings() );
-			setSaved( cloneSettings( defaultSettings() ) );
+			setSettings( null );
+			setSaved( null );
 		} finally {
 			setIsLoading( false );
 		}

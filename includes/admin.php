@@ -52,7 +52,7 @@ add_action( 'admin_enqueue_scripts', function( $hook ) {
     if ( file_exists( $style_path ) ) {
         wp_enqueue_style(
             'bulk-event-importer-settings',
-            BEI_PLUGIN_URL . 'build/settings.css',
+            BEI_PLUGIN_URL . 'build/style-index.css',
             [ 'wp-components' ],
             (string) filemtime( $style_path )
         );

@@ -15,9 +15,161 @@ function escapeHtml( str ) {
 		.replace( /'/g, '&#039;' );
 }
 
+const SKIP_REASON_LABELS = {
+	blocked_keyword_match: __( 'Blocked keywords', 'bulk-event-importer' ),
+	allowlist_no_match: __( 'No allowlist match', 'bulk-event-importer' ),
+	missing_start_date: __( 'Missing start date', 'bulk-event-importer' ),
+	invalid_start_date: __( 'Invalid start date', 'bulk-event-importer' ),
+	date_out_of_import_window: __( 'Out of import window', 'bulk-event-importer' ),
+	event_exception: __( 'Unexpected error', 'bulk-event-importer' ),
+};
+
+function getTopBlockedKeywords( blockedCounts, max ) {
+	return Object.entries( blockedCounts || {} )
+		.filter( ( [ keyword, count ] ) => keyword && Number( count ) > 0 )
+		.sort( ( a, b ) => Number( b[ 1 ] ) - Number( a[ 1 ] ) )
+		.slice( 0, max )
+		.map( ( [ keyword, count ] ) => `${ keyword } (${ Number( count ) })` );
+}
+
+function getTopReasons( skipReasons, max ) {
+	return Object.entries( skipReasons || {} )
+		.filter( ( [ , count ] ) => count && Number( count ) > 0 )
+		.sort( ( a, b ) => Number( b[ 1 ] ) - Number( a[ 1 ] ) )
+		.slice( 0, max )
+		.map(
+			( [ reason, count ] ) =>
+				`${ SKIP_REASON_LABELS[ reason ] || reason }: ${ Number( count ) }`
+		);
+}
+
+function FeedSkipSummary( { feed } ) {
+	const skipReasons = feed.skip_reasons || {};
+	const blockedCounts = feed.blocked_keyword_counts || {};
+	const blockedTotal = Number( skipReasons.blocked_keyword_match || 0 );
+
+	if ( ! Object.keys( skipReasons ).length ) {
+		return null;
+	}
+
+	if ( blockedTotal > 0 && Object.keys( blockedCounts ).length ) {
+		const blockedList = getTopBlockedKeywords( blockedCounts, 9999 );
+		return (
+			<div className="bei-skip-callout">
+				<div className="bei-skip-title">
+					{ blockedTotal }{ ' ' }
+					{ __(
+						'events skipped due to',
+						'bulk-event-importer'
+					) }{ ' ' }
+					{ Object.keys( blockedCounts ).length }{ ' ' }
+					{ __(
+						'blocked keywords:',
+						'bulk-event-importer'
+					) }
+				</div>
+				<div className="bei-skip-keywords">
+					{ blockedList.length ? blockedList.join( ', ' ) : '—' }
+				</div>
+			</div>
+		);
+	}
+
+	const topReasons = getTopReasons( skipReasons, 3 );
+	if ( ! topReasons.length ) {
+		return null;
+	}
+
+	return (
+		<div className="bei-skip-callout">
+			<div className="bei-skip-title">
+				{ __( 'Events skipped (breakdown):', 'bulk-event-importer' ) }
+			</div>
+			<div className="bei-skip-keywords">{ topReasons.join( ', ' ) }</div>
+		</div>
+	);
+}
+
+function FeedDebugDetails( { feed } ) {
+	const errors = Array.isArray( feed.errors )
+		? feed.errors.filter( Boolean )
+		: [];
+	const errCount = errors.length;
+	const debugObj =
+		feed.debug && typeof feed.debug === 'object' ? feed.debug : null;
+
+	if ( ! errCount && ! debugObj ) {
+		return null;
+	}
+
+	const fetchDbg =
+		debugObj?.fetch && typeof debugObj.fetch === 'object'
+			? debugObj.fetch
+			: null;
+	const parseErr = debugObj?.parse_error ? String( debugObj.parse_error ) : '';
+
+	let summaryLine = '';
+	if ( fetchDbg ) {
+		const attempts = Number( fetchDbg.attempts_total || 0 );
+		const ms = Number( fetchDbg.timing_ms || 0 );
+		const last = String( fetchDbg.last_error || '' );
+		const code = Number( fetchDbg.http_code || 0 );
+		summaryLine =
+			'Fetch: ' +
+			( attempts
+				? `${ attempts } attempt${ attempts === 1 ? '' : 's' }`
+				: '—' ) +
+			( ms ? `, ${ ms }ms` : '' ) +
+			( code ? `, HTTP ${ code }` : '' ) +
+			( last ? `, last: ${ last }` : '' );
+	} else if ( parseErr ) {
+		summaryLine = `Parse: ${ parseErr }`;
+	}
+
+	const detailsPayload = {};
+	if ( fetchDbg ) {
+		detailsPayload.fetch = fetchDbg;
+	}
+	if ( parseErr ) {
+		detailsPayload.parse_error = parseErr;
+	}
+
+	return (
+		<>
+			{ summaryLine && (
+				<div className="bei-import-debug-summary">
+					<strong>{ __( 'Debug:', 'bulk-event-importer' ) }</strong>{ ' ' }
+					{ summaryLine }
+				</div>
+			) }
+			{ Object.keys( detailsPayload ).length > 0 && (
+				<details className="bei-import-debug-details">
+					<summary>
+						{ __( 'Debug details', 'bulk-event-importer' ) }
+					</summary>
+					<pre>{ JSON.stringify( detailsPayload, null, 2 ) }</pre>
+				</details>
+			) }
+			{ errCount > 0 && (
+				<details className="bei-import-error-details">
+					<summary>
+						{ __( 'Errors', 'bulk-event-importer' ) } ({ errCount })
+					</summary>
+					<ul>
+						{ errors.slice( -6 ).map( ( message, index ) => (
+							<li key={ index }>{ message }</li>
+						) ) }
+					</ul>
+				</details>
+			) }
+		</>
+	);
+}
+
 export function ImportProgress( { nonce } ) {
 	const [ running, setRunning ] = useState( false );
 	const cancelRequestedRef = useRef( false );
+	const autoStartedRef = useRef( false );
 	const [ progress, setProgress ] = useState( 0 );
 	const [ statusHtml, setStatusHtml ] = useState( '' );
 	const [ visible, setVisible ] = useState( false );
@@ -82,6 +234,8 @@ export function ImportProgress( { nonce } ) {
 									</strong>
 									<br />
 									<span className="description">{ feed.url }</span>
+									<FeedSkipSummary feed={ feed } />
+									<FeedDebugDetails feed={ feed } />
 								</td>
 								<td>
 									{ Number( feed.done || 0 ) } /{ ' ' }
@@ -200,6 +354,9 @@ export function ImportProgress( { nonce } ) {
 							</p>
 							{ renderFeedsTable() }
 							<p>
+								{ __( 'Feeds processed:', 'bulk-event-importer' ) }{ ' ' }
+								{ Object.keys( perFeedRef.current ).length }
+								<br />
 								{ __( 'Events created:', 'bulk-event-importer' ) }{ ' ' }
 								{ Number( data.totals?.created || 0 ) }
 								<br />
@@ -208,6 +365,18 @@ export function ImportProgress( { nonce } ) {
 								<br />
 								{ __( 'Events skipped:', 'bulk-event-importer' ) }{ ' ' }
 								{ Number( data.totals?.skipped || 0 ) }
+								<br />
+								{ __(
+									'Blocked/filtered events removed:',
+									'bulk-event-importer'
+								) }{ ' ' }
+								{ Number( data.totals?.deleted || 0 ) }
+								<br />
+								{ __(
+									'Old events moved to trash:',
+									'bulk-event-importer'
+								) }{ ' ' }
+								{ Number( data.totals?.old_trashed || 0 ) }
 							</p>
 						</>
 					);
@@ -257,6 +426,9 @@ export function ImportProgress( { nonce } ) {
 		}
 	}, [ running, nonce, renderFeedsTable, renderTotals ] );
 
+	const runImportRef = useRef( runImport );
+	runImportRef.current = runImport;
+
 	const requestCancel = useCallback( async () => {
 		if ( ! running || cancelRequestedRef.current ) {
 			return;
@@ -281,10 +453,14 @@ export function ImportProgress( { nonce } ) {
 	}, [ running, nonce ] );
 
 	useEffect( () => {
-		if ( window.location.hash === '#import-progress' ) {
-			runImport();
+		if (
+			window.location.hash === '#import-progress' &&
+			! autoStartedRef.current
+		) {
+			autoStartedRef.current = true;
+			runImportRef.current();
 		}
-	}, [ runImport ] );
+	}, [] );
 
 	return (
 		<div className="bei-settings-header">

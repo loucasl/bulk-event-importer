@@ -32,6 +32,7 @@ export function SettingsPage( { nonce } ) {
 		updateFieldMap,
 		save,
 		discard,
+		reload,
 	} = useSettings();
 
 	const fields = useMemo( () => getSettingsFields(), [] );
@@ -41,10 +42,28 @@ export function SettingsPage( { nonce } ) {
 		[ settings ]
 	);
 
-	if ( isLoading || ! settings ) {
+	if ( isLoading ) {
 		return (
 			<div className="bei-settings-loading">
 				<Spinner />
+			</div>
+		);
+	}
+
+	if ( ! settings ) {
+		return (
+			<div className="bei-settings-app">
+				<h1>{ __( 'Bulk Event Importer Settings', 'bulk-event-importer' ) }</h1>
+				<Notice status="error" isDismissible={ false }>
+					{ error ||
+						__(
+							'Failed to load settings. Your saved configuration was not changed.',
+							'bulk-event-importer'
+						) }
+				</Notice>
+				<Button variant="secondary" onClick={ reload }>
+					{ __( 'Retry', 'bulk-event-importer' ) }
+				</Button>
 			</div>
 		);
 	}

@@ -1,4 +1,9 @@
 import { __ } from '@wordpress/i18n';
+import {
+	KeywordChipsEdit,
+	TextareaFieldEdit,
+	ToggleFieldEdit,
+} from './form-controls';
 
 export function getSettingsFields() {
 	return [
@@ -10,7 +15,7 @@ export function getSettingsFields() {
 				'One feed per line: Label | URL or Label | URL | type (type is ics or rss, optional). Lines starting with # are ignored.',
 				'bulk-event-importer'
 			),
-			Edit: 'textarea',
+			Edit: TextareaFieldEdit,
 		},
 		{
 			id: 'default_feed_type',
@@ -74,38 +79,42 @@ export function getSettingsFields() {
 		{
 			id: 'blocked_keywords',
 			label: __( 'Keywords', 'bulk-event-importer' ),
-			type: 'array',
+			type: 'text',
 			description: __(
 				'Events whose title contains any of these are skipped on import and removed if already published.',
 				'bulk-event-importer'
 			),
+			Edit: KeywordChipsEdit,
 		},
 		{
 			id: 'allowlist_enabled',
 			label: __( 'Allowlist Filter', 'bulk-event-importer' ),
-			type: 'boolean',
+			type: 'integer',
 			description: __(
 				'Only import events that match at least one allowed keyword (title, location, or link).',
 				'bulk-event-importer'
 			),
+			Edit: ToggleFieldEdit,
 		},
 		{
 			id: 'geocoding_enabled',
 			label: __( 'Geocoding', 'bulk-event-importer' ),
-			type: 'boolean',
+			type: 'integer',
 			description: __(
 				'Look up coordinates for event locations. Requires LL_GOOGLE_GEOCODE_KEY in wp-config.php.',
 				'bulk-event-importer'
 			),
+			Edit: ToggleFieldEdit,
 		},
 		{
 			id: 'allowed_keywords',
 			label: __( 'Allowed keywords', 'bulk-event-importer' ),
-			type: 'array',
+			type: 'text',
 			description: __(
 				'Only import events that match at least one of these keywords (checked against title, location, and link).',
 				'bulk-event-importer'
 			),
+			Edit: KeywordChipsEdit,
 			isVisible: ( item ) => !! item.allowlist_enabled,
 		},
 		{
@@ -147,79 +156,42 @@ export function getSettingsFields() {
 
 export function getSettingsFormLayout() {
 	return {
-		type: 'panel',
+		type: 'regular',
+		labelPosition: 'top',
 		fields: [
 			{
-				type: 'card',
+				id: 'section_feeds',
 				label: __( 'Feed URLs', 'bulk-event-importer' ),
-				isOpened: true,
-				fields: [ 'feed_urls', 'default_feed_type' ],
+				children: [ 'feed_urls', 'default_feed_type' ],
 			},
 			{
-				type: 'card',
+				id: 'section_window',
 				label: __( 'Import Window & Status', 'bulk-event-importer' ),
-				isOpened: true,
-				fields: [
-					{
-						type: 'row',
-						fields: [
-							'past_days',
-							'future_months',
-							'trash_after_days',
-						],
-					},
-					{
-						type: 'row',
-						fields: [ 'default_post_status', 'cron_interval' ],
-					},
+				children: [
+					'past_days',
+					'future_months',
+					'trash_after_days',
+					'default_post_status',
+					'cron_interval',
 				],
 			},
 			{
-				type: 'card',
+				id: 'section_blocked',
 				label: __( 'Blocked Keywords', 'bulk-event-importer' ),
-				isOpened: true,
-				fields: [ 'blocked_keywords' ],
+				children: [ 'blocked_keywords' ],
 			},
 			{
-				type: 'card',
+				id: 'section_modules',
 				label: __( 'Optional Modules', 'bulk-event-importer' ),
-				description: __(
-					'Enable a module to show its settings below. Disabled modules are left out of import behaviour.',
-					'bulk-event-importer'
-				),
-				isOpened: true,
-				fields: [ 'allowlist_enabled', 'geocoding_enabled' ],
-			},
-			{
-				type: 'card',
-				label: __( 'Allowlist Filter', 'bulk-event-importer' ),
-				isOpened: true,
-				fields: [ 'allowed_keywords' ],
-			},
-			{
-				type: 'card',
-				label: __( 'Geocoding', 'bulk-event-importer' ),
-				description: __(
-					'Requires LL_GOOGLE_GEOCODE_KEY defined in wp-config.php. Meta keys must match this site\'s JetEngine map field.',
-					'bulk-event-importer'
-				),
-				isOpened: true,
-				fields: [
+				children: [
+					'allowlist_enabled',
+					'allowed_keywords',
+					'geocoding_enabled',
 					'geocoding_address_metas',
-					{
-						type: 'row',
-						fields: [
-							'geocoding_lat_meta',
-							'geocoding_lng_meta',
-						],
-					},
-					{
-						type: 'row',
-						fields: [
-							'geocoding_hash_meta',
-							'geocoding_country_suffix',
-						],
-					},
+					'geocoding_lat_meta',
+					'geocoding_lng_meta',
+					'geocoding_hash_meta',
+					'geocoding_country_suffix',
 				],
 			},
 		],
