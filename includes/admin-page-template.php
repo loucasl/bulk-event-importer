@@ -113,69 +113,6 @@ function bei_admin_chip_field( $name, $raw_value, $label = '', $description = ''
             <?php bei_admin_chip_field( $OPT . '[blocked_keywords]', $options['blocked_keywords'] ?? '' ); ?>
         </section>
 
-        <!-- Optional modules overview + settings -->
-        <section class="bei-section">
-            <h2>Optional Modules</h2>
-            <p class="description">Enable a module to show its settings below. Disabled modules are left out of import behaviour.</p>
-            <div class="bei-modules-grid">
-                <article class="bei-module-card">
-                    <div class="bei-module-card-body">
-                        <h3 class="bei-module-card-title">Allowlist Filter</h3>
-                        <p class="bei-module-card-desc">Only import events that match at least one allowed keyword (title, location, or link).</p>
-                    </div>
-                    <label class="bei-module-switch">
-                        <input type="checkbox" class="bei-module-toggle" name="<?php echo esc_attr( $OPT ); ?>[allowlist_enabled]" value="1" data-bei-module="allowlist" <?php checked( ! empty( $options['allowlist_enabled'] ) ); ?>>
-                        <span class="bei-module-switch-ui" aria-hidden="true"></span>
-                        <span class="screen-reader-text">Enable Allowlist Filter</span>
-                    </label>
-                </article>
-                <article class="bei-module-card">
-                    <div class="bei-module-card-body">
-                        <h3 class="bei-module-card-title">Geocoding</h3>
-                        <p class="bei-module-card-desc">Look up coordinates for event locations. Requires <code>LL_GOOGLE_GEOCODE_KEY</code> in wp-config.php.</p>
-                    </div>
-                    <label class="bei-module-switch">
-                        <input type="checkbox" class="bei-module-toggle" name="<?php echo esc_attr( $OPT ); ?>[geocoding_enabled]" value="1" data-bei-module="geocoding" <?php checked( ! empty( $options['geocoding_enabled'] ) ); ?>>
-                        <span class="bei-module-switch-ui" aria-hidden="true"></span>
-                        <span class="screen-reader-text">Enable Geocoding</span>
-                    </label>
-                </article>
-            </div>
-        </section>
-
-        <section class="bei-section bei-module-panel" data-bei-module-panel="allowlist"<?php echo empty( $options['allowlist_enabled'] ) ? ' hidden' : ''; ?>>
-            <h2>Allowlist Filter <span class="bei-badge">optional module</span></h2>
-            <p class="description">Only import events that match at least one of these keywords (checked against title, location, and link).</p>
-            <?php bei_admin_chip_field( $OPT . '[allowed_keywords]', $options['allowed_keywords'] ?? '' ); ?>
-        </section>
-
-        <section class="bei-section bei-module-panel" data-bei-module-panel="geocoding"<?php echo empty( $options['geocoding_enabled'] ) ? ' hidden' : ''; ?>>
-            <h2>Geocoding <span class="bei-badge">optional module</span></h2>
-            <p class="description">Requires <code>LL_GOOGLE_GEOCODE_KEY</code> defined in wp-config.php. Meta keys must match this site's JetEngine map field.</p>
-            <table class="form-table" role="presentation">
-                <tr>
-                    <th scope="row">Address source meta key(s)</th>
-                    <td><input type="text" name="<?php echo esc_attr( $OPT ); ?>[geocoding_address_metas]" value="<?php echo esc_attr( $options['geocoding_address_metas'] ?? '' ); ?>" class="regular-text" placeholder="event-location"><p class="description">Comma-separated if the address is built from more than one field.</p></td>
-                </tr>
-                <tr>
-                    <th scope="row">Latitude meta key</th>
-                    <td><input type="text" name="<?php echo esc_attr( $OPT ); ?>[geocoding_lat_meta]" value="<?php echo esc_attr( $options['geocoding_lat_meta'] ?? '' ); ?>" class="regular-text"></td>
-                </tr>
-                <tr>
-                    <th scope="row">Longitude meta key</th>
-                    <td><input type="text" name="<?php echo esc_attr( $OPT ); ?>[geocoding_lng_meta]" value="<?php echo esc_attr( $options['geocoding_lng_meta'] ?? '' ); ?>" class="regular-text"></td>
-                </tr>
-                <tr>
-                    <th scope="row">Hash meta key <span class="bei-optional">(optional)</span></th>
-                    <td><input type="text" name="<?php echo esc_attr( $OPT ); ?>[geocoding_hash_meta]" value="<?php echo esc_attr( $options['geocoding_hash_meta'] ?? '' ); ?>" class="regular-text"></td>
-                </tr>
-                <tr>
-                    <th scope="row">Country suffix <span class="bei-optional">(optional)</span></th>
-                    <td><input type="text" name="<?php echo esc_attr( $OPT ); ?>[geocoding_country_suffix]" value="<?php echo esc_attr( $options['geocoding_country_suffix'] ?? '' ); ?>" class="regular-text" placeholder="Canada"></td>
-                </tr>
-            </table>
-        </section>
-
         <!-- Dynamic taxonomies -->
         <section class="bei-section">
             <h2>Categories &amp; Taxonomies</h2>
@@ -323,6 +260,69 @@ function bei_admin_chip_field( $name, $raw_value, $label = '', $description = ''
                 <?php endforeach; ?>
             </div>
             <button type="button" class="button" id="bei-add-extra-meta">Add static meta field</button>
+        </section>
+
+        <!-- Optional modules overview + settings -->
+        <section class="bei-section">
+            <h2>Optional Modules</h2>
+            <p class="description">Enable a module to show its settings below. Disabled modules are left out of import behaviour.</p>
+            <div class="bei-modules-grid">
+                <article class="bei-module-card">
+                    <div class="bei-module-card-body">
+                        <h3 class="bei-module-card-title">Allowlist Filter</h3>
+                        <p class="bei-module-card-desc">Only import events that match at least one allowed keyword (title, location, or link).</p>
+                    </div>
+                    <label class="bei-module-switch">
+                        <input type="checkbox" class="bei-module-toggle" name="<?php echo esc_attr( $OPT ); ?>[allowlist_enabled]" value="1" data-bei-module="allowlist" <?php checked( ! empty( $options['allowlist_enabled'] ) ); ?>>
+                        <span class="bei-module-switch-ui" aria-hidden="true"></span>
+                        <span class="screen-reader-text">Enable Allowlist Filter</span>
+                    </label>
+                </article>
+                <article class="bei-module-card">
+                    <div class="bei-module-card-body">
+                        <h3 class="bei-module-card-title">Geocoding</h3>
+                        <p class="bei-module-card-desc">Look up coordinates for event locations. Requires <code>LL_GOOGLE_GEOCODE_KEY</code> in wp-config.php.</p>
+                    </div>
+                    <label class="bei-module-switch">
+                        <input type="checkbox" class="bei-module-toggle" name="<?php echo esc_attr( $OPT ); ?>[geocoding_enabled]" value="1" data-bei-module="geocoding" <?php checked( ! empty( $options['geocoding_enabled'] ) ); ?>>
+                        <span class="bei-module-switch-ui" aria-hidden="true"></span>
+                        <span class="screen-reader-text">Enable Geocoding</span>
+                    </label>
+                </article>
+            </div>
+        </section>
+
+        <section class="bei-section bei-module-panel" data-bei-module-panel="allowlist"<?php echo empty( $options['allowlist_enabled'] ) ? ' hidden' : ''; ?>>
+            <h2>Allowlist Filter <span class="bei-badge">optional module</span></h2>
+            <p class="description">Only import events that match at least one of these keywords (checked against title, location, and link).</p>
+            <?php bei_admin_chip_field( $OPT . '[allowed_keywords]', $options['allowed_keywords'] ?? '' ); ?>
+        </section>
+
+        <section class="bei-section bei-module-panel" data-bei-module-panel="geocoding"<?php echo empty( $options['geocoding_enabled'] ) ? ' hidden' : ''; ?>>
+            <h2>Geocoding <span class="bei-badge">optional module</span></h2>
+            <p class="description">Requires <code>LL_GOOGLE_GEOCODE_KEY</code> defined in wp-config.php. Meta keys must match this site's JetEngine map field.</p>
+            <table class="form-table" role="presentation">
+                <tr>
+                    <th scope="row">Address source meta key(s)</th>
+                    <td><input type="text" name="<?php echo esc_attr( $OPT ); ?>[geocoding_address_metas]" value="<?php echo esc_attr( $options['geocoding_address_metas'] ?? '' ); ?>" class="regular-text" placeholder="event-location"><p class="description">Comma-separated if the address is built from more than one field.</p></td>
+                </tr>
+                <tr>
+                    <th scope="row">Latitude meta key</th>
+                    <td><input type="text" name="<?php echo esc_attr( $OPT ); ?>[geocoding_lat_meta]" value="<?php echo esc_attr( $options['geocoding_lat_meta'] ?? '' ); ?>" class="regular-text"></td>
+                </tr>
+                <tr>
+                    <th scope="row">Longitude meta key</th>
+                    <td><input type="text" name="<?php echo esc_attr( $OPT ); ?>[geocoding_lng_meta]" value="<?php echo esc_attr( $options['geocoding_lng_meta'] ?? '' ); ?>" class="regular-text"></td>
+                </tr>
+                <tr>
+                    <th scope="row">Hash meta key <span class="bei-optional">(optional)</span></th>
+                    <td><input type="text" name="<?php echo esc_attr( $OPT ); ?>[geocoding_hash_meta]" value="<?php echo esc_attr( $options['geocoding_hash_meta'] ?? '' ); ?>" class="regular-text"></td>
+                </tr>
+                <tr>
+                    <th scope="row">Country suffix <span class="bei-optional">(optional)</span></th>
+                    <td><input type="text" name="<?php echo esc_attr( $OPT ); ?>[geocoding_country_suffix]" value="<?php echo esc_attr( $options['geocoding_country_suffix'] ?? '' ); ?>" class="regular-text" placeholder="Canada"></td>
+                </tr>
+            </table>
         </section>
 
         <?php submit_button( 'Save Settings' ); ?>

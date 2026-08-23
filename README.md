@@ -55,8 +55,8 @@ Two hooks are available for site-specific behavior that does not belong in the s
 
 ### 2.0.1
 
-- Importer Settings: optional modules (Allowlist Filter, Geocoding) appear in a card grid with enable toggles that show or hide each module's settings section; the grid sits directly above those module sections
-- Moved "Run Import Now" to the top right below the page title, and removed the shared-code / per-site configuration intro paragraph
+- Importer Settings: optional modules (Allowlist Filter, Geocoding) appear in a card grid with enable toggles that show or hide each module's settings section; the group sits below Static meta, with the grid directly above those module sections
+- Moved "Run Import Now" to the top right below the page title, loosened top spacing, and removed the shared-code / per-site configuration intro paragraph
 
 ### 2.0.0
 
