@@ -3,7 +3,7 @@ import {
 	Button,
 	ProgressBar,
 } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 function escapeHtml( str ) {
 	return String( str || '' )
@@ -106,6 +106,340 @@ function FeedSkipSummary( { feed } ) {
 	);
 }
 
+function getIssueCopy() {
+	return {
+		http_403: {
+			title: __( 'The calendar host blocked this site', 'bulk-event-importer' ),
+			why: __(
+				'The feed refused the importer (HTTP 403). This is common when a CDN or calendar only allows browser visits.',
+				'bulk-event-importer'
+			),
+			action: __(
+				'Open the URL in a browser. If it loads there, ask the source for a public ICS or RSS link, or put # at the start of that feed line to skip it until it is fixed.',
+				'bulk-event-importer'
+			),
+		},
+		http_404: {
+			title: __( 'Feed URL was not found', 'bulk-event-importer' ),
+			why: __(
+				'The address no longer exists or has moved (HTTP 404).',
+				'bulk-event-importer'
+			),
+			action: __(
+				'Update or remove that line in Feed URLs.',
+				'bulk-event-importer'
+			),
+		},
+		http_401: {
+			title: __( 'The feed requires a sign-in', 'bulk-event-importer' ),
+			why: __(
+				'The host asked for a login (HTTP 401). Private calendar links cannot be imported.',
+				'bulk-event-importer'
+			),
+			action: __(
+				'Replace it with a public ICS or RSS URL.',
+				'bulk-event-importer'
+			),
+		},
+		http_429: {
+			title: __( 'The host asked us to slow down', 'bulk-event-importer' ),
+			why: __(
+				'Too many requests were sent in a short time (HTTP 429).',
+				'bulk-event-importer'
+			),
+			action: __(
+				'Wait and run the import again, or set automatic imports to Once a day.',
+				'bulk-event-importer'
+			),
+		},
+		http_5xx: {
+			title: __( 'The calendar server had an error', 'bulk-event-importer' ),
+			why: __(
+				'The remote server returned an error (HTTP 5xx).',
+				'bulk-event-importer'
+			),
+			action: __(
+				'Try again later. If it keeps happening, check with the source that their feed is up.',
+				'bulk-event-importer'
+			),
+		},
+		http_other: {
+			title: __( 'Unexpected response from the feed', 'bulk-event-importer' ),
+			why: __(
+				'The host returned a status the importer cannot use.',
+				'bulk-event-importer'
+			),
+			action: __(
+				'Open the URL and confirm it still publishes a calendar or RSS feed. Update the address if it has changed.',
+				'bulk-event-importer'
+			),
+		},
+		parse: {
+			title: __( 'The feed could not be read', 'bulk-event-importer' ),
+			why: __(
+				'The importer expected ICS or RSS but got something else, or the file is malformed.',
+				'bulk-event-importer'
+			),
+			action: __(
+				'Confirm Default feed type, or add ics or rss at the end of that feed line. The URL should be a calendar or RSS file, not a normal web page.',
+				'bulk-event-importer'
+			),
+		},
+		timeout: {
+			title: __( 'The feed took too long to respond', 'bulk-event-importer' ),
+			why: __(
+				'The request timed out before a complete feed came back.',
+				'bulk-event-importer'
+			),
+			action: __(
+				'Try again. If it always times out, the source may be blocking this server or the feed is too large.',
+				'bulk-event-importer'
+			),
+		},
+		dns: {
+			title: __( 'The hostname could not be found', 'bulk-event-importer' ),
+			why: __(
+				'This server could not resolve the domain name in the feed URL.',
+				'bulk-event-importer'
+			),
+			action: __(
+				'Check the URL for typos. If the address is correct, this server may not be able to reach that domain.',
+				'bulk-event-importer'
+			),
+		},
+		ssl: {
+			title: __( 'A secure connection could not be made', 'bulk-event-importer' ),
+			why: __(
+				'HTTPS failed (certificate, TLS, or an outbound SSL block).',
+				'bulk-event-importer'
+			),
+			action: __(
+				'Confirm the URL starts with https and the site’s certificate is valid. Hosting firewalls sometimes block outbound HTTPS.',
+				'bulk-event-importer'
+			),
+		},
+		empty: {
+			title: __( 'The feed returned no content', 'bulk-event-importer' ),
+			why: __(
+				'The URL responded but the body was empty.',
+				'bulk-event-importer'
+			),
+			action: __(
+				'Open the URL. If the page is empty or needs a login, replace it with a public ICS or RSS link.',
+				'bulk-event-importer'
+			),
+		},
+		fetch: {
+			title: __( 'The feed could not be downloaded', 'bulk-event-importer' ),
+			why: __(
+				'The importer could not retrieve the calendar after its usual retries.',
+				'bulk-event-importer'
+			),
+			action: __(
+				'Open the URL in a browser and compare it with the error below. Update the feed line if the address has changed.',
+				'bulk-event-importer'
+			),
+		},
+		event_exception: {
+			title: __( 'Some events failed while saving', 'bulk-event-importer' ),
+			why: __(
+				'The feed downloaded, but one or more events hit an unexpected error.',
+				'bulk-event-importer'
+			),
+			action: __(
+				'Check the site’s PHP error log, then run the import again for those feeds.',
+				'bulk-event-importer'
+			),
+		},
+	};
+}
+
+function getFeedIssueInfo( feed ) {
+	const errors = Array.isArray( feed.errors )
+		? feed.errors.filter( Boolean )
+		: [];
+	const debug =
+		feed.debug && typeof feed.debug === 'object' ? feed.debug : {};
+	const fetchDbg =
+		debug.fetch && typeof debug.fetch === 'object' ? debug.fetch : {};
+	return {
+		source: feed.source || __( 'Unknown', 'bulk-event-importer' ),
+		url: feed.url || '',
+		errors,
+		http: Number( fetchDbg.http_code || 0 ),
+		last: String( fetchDbg.last_error || '' ),
+		parse: debug.parse_error ? String( debug.parse_error ) : '',
+		exceptions: Number( feed.skip_reasons?.event_exception || 0 ),
+	};
+}
+
+function classifyFeedIssue( info ) {
+	const blob = [ info.last, info.parse, ...info.errors ].join( ' ' );
+	if ( info.http === 403 || /\b403\b/.test( blob ) ) {
+		return 'http_403';
+	}
+	if ( info.http === 404 || /\b404\b/.test( blob ) ) {
+		return 'http_404';
+	}
+	if ( info.http === 401 || /\b401\b/.test( blob ) ) {
+		return 'http_401';
+	}
+	if ( info.http === 429 || /\b429\b/.test( blob ) ) {
+		return 'http_429';
+	}
+	if ( info.http >= 500 && info.http < 600 ) {
+		return 'http_5xx';
+	}
+	if ( info.http && ( info.http < 200 || info.http >= 300 ) ) {
+		return 'http_other';
+	}
+	if ( info.parse ) {
+		return 'parse';
+	}
+	if ( /timed? out|timeout/i.test( blob ) ) {
+		return 'timeout';
+	}
+	if ( /could not resolve|resolve host|name or service not known|dns/i.test( blob ) ) {
+		return 'dns';
+	}
+	if ( /ssl|certificate|tls|curl error 60|cURL error 35/i.test( blob ) ) {
+		return 'ssl';
+	}
+	if ( /empty response/i.test( blob ) ) {
+		return 'empty';
+	}
+	if ( info.errors.length || info.last ) {
+		return 'fetch';
+	}
+	return null;
+}
+
+function collectImportIssues( perFeed ) {
+	const copy = getIssueCopy();
+	const groups = {};
+	const add = ( id, feed ) => {
+		if ( ! copy[ id ] ) {
+			return;
+		}
+		if ( ! groups[ id ] ) {
+			groups[ id ] = { id, ...copy[ id ], feeds: [] };
+		}
+		groups[ id ].feeds.push( feed );
+	};
+
+	Object.keys( perFeed )
+		.map( Number )
+		.filter( Number.isFinite )
+		.sort( ( a, b ) => a - b )
+		.forEach( ( index ) => {
+			const feed = perFeed[ index ] || {};
+			const info = getFeedIssueInfo( feed );
+			const kind = classifyFeedIssue( info );
+			if ( kind ) {
+				add( kind, {
+					source: info.source,
+					url: info.url,
+					detail:
+						info.parse ||
+						info.last ||
+						info.errors[ 0 ] ||
+						( info.http ? `HTTP ${ info.http }` : '' ),
+				} );
+			}
+			if ( info.exceptions > 0 ) {
+				add( 'event_exception', {
+					source: info.source,
+					url: info.url,
+					detail: `${ info.exceptions } events`,
+				} );
+			}
+		} );
+
+	return Object.values( groups ).sort(
+		( a, b ) => b.feeds.length - a.feeds.length
+	);
+}
+
+function ImportIssueSummary( { groups } ) {
+	if ( ! groups.length ) {
+		return null;
+	}
+	const feedCount = new Set(
+		groups.flatMap( ( group ) =>
+			group.feeds.map( ( feed ) => feed.url || feed.source )
+		)
+	).size;
+	return (
+		<div className="bei-import-issues">
+			<strong className="bei-import-issues-title">
+				{ feedCount === 1
+					? __( '1 feed needs attention', 'bulk-event-importer' )
+					: sprintf(
+							/* translators: %d: number of feeds with errors */
+							__( '%d feeds need attention', 'bulk-event-importer' ),
+							feedCount
+					  ) }
+			</strong>
+			{ groups.map( ( group ) => {
+				const extra = group.feeds.length - 6;
+				return (
+					<div className="bei-import-issue" key={ group.id }>
+						<div className="bei-import-issue-head">
+							{ group.title }
+							<span className="bei-import-issue-count">
+								{ ' ' }
+								({ group.feeds.length })
+							</span>
+						</div>
+						<p className="bei-import-issue-why">{ group.why }</p>
+						<p className="bei-import-issue-next">
+							<strong>
+								{ __( 'Next step:', 'bulk-event-importer' ) }
+							</strong>{ ' ' }
+							{ group.action }
+						</p>
+						<ul className="bei-import-issue-feeds">
+							{ group.feeds.slice( 0, 6 ).map( ( feed ) => (
+								<li key={ `${ feed.source }-${ feed.url }` }>
+									<strong>{ feed.source }</strong>
+									{ feed.url ? (
+										<span className="description">
+											{ ' ' }
+											{ feed.url }
+										</span>
+									) : null }
+									{ feed.detail ? (
+										<div className="description">
+											{ feed.detail }
+										</div>
+									) : null }
+								</li>
+							) ) }
+						</ul>
+						{ extra > 0 && (
+							<p className="description bei-import-issue-more">
+								{ extra === 1
+									? __(
+											'And 1 more in the feed list below.',
+											'bulk-event-importer'
+									  )
+									: sprintf(
+											/* translators: %d: additional feeds not listed */
+											__(
+												'And %d more in the feed list below.',
+												'bulk-event-importer'
+											),
+											extra
+									  ) }
+							</p>
+						) }
+					</div>
+				);
+			} ) }
+		</div>
+	);
+}
+
 function FeedDebugDetails( { feed } ) {
 	const errors = Array.isArray( feed.errors )
 		? feed.errors.filter( Boolean )
@@ -192,6 +526,25 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 	const jobIdRef = useRef( '' );
 	const perFeedRef = useRef( {} );
 	const followFeedsRef = useRef( false );
+	const feedScrollRef = useRef( null );
+	const [ feedTick, setFeedTick ] = useState( 0 );
+
+	const onFeedScroll = useCallback( () => {
+		const el = feedScrollRef.current;
+		if ( ! el ) {
+			return;
+		}
+		const gap = el.scrollHeight - el.scrollTop - el.clientHeight;
+		followFeedsRef.current = gap < 56;
+	}, [] );
+
+	useEffect( () => {
+		const el = feedScrollRef.current;
+		if ( ! el || ! followFeedsRef.current ) {
+			return;
+		}
+		el.scrollTop = el.scrollHeight;
+	}, [ feedTick ] );
 
 	const renderFeedsTable = useCallback( () => {
 		const perFeed = perFeedRef.current;
@@ -207,13 +560,10 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 		return (
 			<div
 				className="bei-import-feed-scroll"
-				ref={ ( node ) => {
-					if ( node && followFeedsRef.current ) {
-						node.scrollTop = node.scrollHeight;
-					}
-				} }
+				ref={ feedScrollRef }
+				onScroll={ onFeedScroll }
 			>
-			<table className="widefat striped bei-import-feed-table">
+				<table className="widefat striped bei-import-feed-table">
 				<thead>
 					<tr>
 						<th>{ __( 'Feed', 'bulk-event-importer' ) }</th>
@@ -264,10 +614,10 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 						);
 					} ) }
 				</tbody>
-			</table>
+				</table>
 			</div>
 		);
-	}, [] );
+	}, [ feedTick, onFeedScroll ] );
 
 	const runImport = useCallback( async () => {
 		if ( running ) {
@@ -278,6 +628,7 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 		followFeedsRef.current = true;
 		setVisible( true );
 		setProgress( 0 );
+		setFeedTick( 0 );
 		setStatusHtml(
 			<p>{ __( 'Starting import…', 'bulk-event-importer' ) }</p>
 		);
@@ -343,6 +694,7 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 				const data = res.data || {};
 				if ( typeof data.feed_i !== 'undefined' && data.feed ) {
 					perFeedRef.current[ data.feed_i ] = data.feed;
+					setFeedTick( ( n ) => n + 1 );
 				}
 
 				if ( data.done ) {
@@ -357,6 +709,7 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 					}
 					setProgress( 100 );
 					followFeedsRef.current = false;
+					setFeedTick( ( n ) => n + 1 );
 					setStatusHtml(
 						<>
 							<div className="bei-import-heading">
@@ -426,7 +779,11 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 									],
 								] }
 							/>
-							{ renderFeedsTable() }
+							<ImportIssueSummary
+								groups={ collectImportIssues(
+									perFeedRef.current
+								) }
+							/>
 						</>
 					);
 					setRunning( false );
@@ -478,7 +835,6 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 								] }
 							/>
 						) : null }
-						{ renderFeedsTable() }
 					</>
 				);
 
@@ -497,7 +853,7 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 			);
 			setRunning( false );
 		}
-	}, [ running, nonce, renderFeedsTable ] );
+	}, [ running, nonce ] );
 
 	const runImportRef = useRef( runImport );
 	runImportRef.current = runImport;
@@ -566,6 +922,7 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 						</span>
 					</div>
 					<div className="bei-import-status">{ statusHtml }</div>
+					{ renderFeedsTable() }
 				</div>
 			) }
 		</div>
