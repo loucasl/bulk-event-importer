@@ -32,20 +32,19 @@ function bei_admin_chip_field( $name, $raw_value, $label = '', $description = ''
 <div class="wrap bulk-event-importer-settings">
 
     <div class="bei-page-header">
-        <h1>Bulk Event Importer Settings</h1>
-        <div class="bei-import-now">
+        <div class="bei-page-header-top">
+            <h1>Bulk Event Importer Settings</h1>
             <div class="bei-import-actions">
                 <button type="button" id="run-import-ajax" class="button button-primary">Run Import Now</button>
                 <button type="button" id="cancel-import-ajax" class="button" style="display:none;">Cancel Import</button>
             </div>
-            <p class="description bei-import-hint">Imports all configured feeds in real time. Progress appears below.</p>
-            <div id="import-progress" class="bei-import-progress" aria-labelledby="import-progress-heading">
-                <h2 id="import-progress-heading" class="screen-reader-text">Import progress</h2>
-                <div class="bei-progress-outer">
-                    <div id="progress-bar" class="bei-progress-bar"></div>
-                </div>
-                <div id="import-status" class="bei-import-status"></div>
+        </div>
+        <div id="import-progress" class="bei-import-progress" aria-labelledby="import-progress-heading">
+            <h2 id="import-progress-heading" class="screen-reader-text">Import progress</h2>
+            <div class="bei-progress-outer">
+                <div id="progress-bar" class="bei-progress-bar"></div>
             </div>
+            <div id="import-status" class="bei-import-status"></div>
         </div>
     </div>
 
