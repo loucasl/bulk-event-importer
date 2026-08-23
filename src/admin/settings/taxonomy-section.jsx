@@ -32,7 +32,7 @@ function TaxonomyBlock( {
 			<table className="widefat fixed striped bei-group-table">
 				<thead>
 					<tr>
-						<th style={ { width: '22%' } }>
+						<th style={ { width: '26%' } }>
 							{ __( 'Category', 'bulk-event-importer' ) }
 						</th>
 						<th>{ __( 'Keywords', 'bulk-event-importer' ) }</th>
