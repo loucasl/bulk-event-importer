@@ -213,13 +213,34 @@ Verified facts for `loucasl/bulk-event-importer`:
 | Subdirectory | **empty** — plugin files live at the repo root (`bulk-event-importer.php`) |
 | Package / folder | Must resolve to `bulk-event-importer` (not blank) |
 
-On WP Pusher → Edit plugin, confirm those values, then:
+### Empty `&package=` (confirmed failure mode)
 
-1. Reconnect / re-authorize GitHub if the connection looks stale.
-2. Enable logging under WP Pusher → Log while testing.
-3. Click **Update plugin**. Success here must work before Push-to-Deploy can work.
-4. If Update fails with **“An error occurred: Invalid data provided.”**, that string is WordPress core `WP_Upgrader` `bad_request` — usually an empty package/source. Typical causes: empty package slug in WP Pusher, wrong/empty subdirectory after the repo flatten, private-checkbox mismatch on a public repo, or a broken GitHub token. Fix the Edit-plugin fields (or remove + re-install the package from GitHub) before chasing webhooks.
-5. Copy the Push-to-Deploy URL and confirm it includes a non-empty `&package=…` (e.g. `&package=bulk-event-importer`). An empty `&package=` means the package was never registered correctly.
+If the Push-to-Deploy URL ends in `&package=` with nothing after it, the WP Pusher
+package row is incomplete. Edit-plugin saves will **not** reliably repair that.
+Manual **Update plugin** then fails with WordPress’s
+`An error occurred: Invalid data provided.` (`WP_Upgrader` `bad_request` —
+empty package/source). Fix by removing and re-installing the package:
+
+1. WP Pusher → Plugins → remove/unlink this plugin package (do **not** rely on
+   WordPress “Deactivate” alone). If WP asks about deleting files, prefer
+   keeping the installed files if you only want to reset WP Pusher’s record;
+   otherwise a clean reinstall is fine on staging.
+2. WP Pusher → Install plugin → GitHub:
+   - Repository: `loucasl/bulk-event-importer`
+   - Branch: `develop`
+   - Subdirectory: leave blank
+   - Repository is private: **unchecked**
+   - Push-to-Deploy: enabled
+3. After install, open the Plugins list in WP Pusher and copy the new
+   Push-to-Deploy URL. It must contain `&package=bulk-event-importer` (or the
+   actual install folder slug — never empty).
+4. Update the GitHub webhook Payload URL to that new URL (token changes on
+   reinstall).
+5. Click **Update plugin** once — it must succeed before treating webhooks as
+   the remaining problem.
+
+Also confirm: reconnect GitHub under WP Pusher settings if the token looks stale,
+and enable WP Pusher → Log while testing.
 
 ### Push-to-Deploy and SiteGround Anti-Bot AI
 
