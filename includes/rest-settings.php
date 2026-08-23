@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * REST API for Importer Settings (React admin UI).
+ * REST API for Importer Settings (DataForm admin UI).
  */
 add_action( 'rest_api_init', function() {
     register_rest_route(

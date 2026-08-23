@@ -201,6 +201,12 @@ export function getSettingsFormLayout( feedUrlCount = 0 ) {
 			: __( 'Feed URLs', 'bulk-event-importer' );
 
 	return {
+		type: 'regular',
+		labelPosition: 'top',
+		layout: {
+			type: 'regular',
+			labelPosition: 'top',
+		},
 		fields: [
 			{
 				id: 'section_feeds',
@@ -229,6 +235,12 @@ export function getSettingsFormLayout( feedUrlCount = 0 ) {
 
 function getOptionalModulesFormLayout( fieldIds = MODULE_FIELD_IDS ) {
 	return {
+		type: 'regular',
+		labelPosition: 'top',
+		layout: {
+			type: 'regular',
+			labelPosition: 'top',
+		},
 		fields: fieldIds,
 	};
 }

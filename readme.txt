@@ -40,10 +40,10 @@ site-specific to belong in the shared codebase:
 == Changelog ==
 
 = 2.2.1 =
-* Dropped the unused @wordpress/dataviews dependency. Settings now render
-  through a small local form helper; field editors were already custom
-  WordPress components from later UI work.
-* Admin JS no longer bundles DataViews table/filter/pagination code.
+* Settings still use WordPress DataForm. The form now loads from WordPress
+  core (wp-dataviews) so layout and styles stay aligned with admin as core
+  evolves, instead of shipping a frozen DataViews copy in the plugin.
+* Admin JS no longer compiles DataViews into settings.js.
 * Removed leftover unused settings helpers from the 2.1 rebuild.
 
 = 2.2.0 =

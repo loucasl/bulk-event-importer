@@ -4,6 +4,7 @@ import {
 	Notice,
 	Spinner,
 } from '@wordpress/components';
+import { DataForm } from '@wordpress/dataviews';
 import { __ } from '@wordpress/i18n';
 import { FieldMappingSection, StaticMetaSection } from './field-mapping-section';
 import { GeocodingAdvancedFields } from './geocoding-fields';
@@ -16,7 +17,6 @@ import {
 	mergeFormData,
 } from './fields';
 import { ImportProgress } from './import-progress';
-import { SettingsForm } from './settings-form';
 import { TaxonomySection } from './taxonomy-section';
 import { useSettings } from './use-settings';
 import { countFeedUrls } from './utils';
@@ -110,7 +110,7 @@ export function SettingsPage( { nonce } ) {
 				</Notice>
 			) }
 
-			<SettingsForm
+			<DataForm
 				data={ settings }
 				fields={ coreFields }
 				form={ coreForm }
@@ -135,7 +135,7 @@ export function SettingsPage( { nonce } ) {
 						'bulk-event-importer'
 					) }
 				</p>
-				<SettingsForm
+				<DataForm
 					data={ settings }
 					fields={ moduleFields }
 					form={ geocodingForm }
@@ -147,7 +147,7 @@ export function SettingsPage( { nonce } ) {
 						onChange={ updateSettings }
 					/>
 				) }
-				<SettingsForm
+				<DataForm
 					data={ settings }
 					fields={ moduleFields }
 					form={ staticMetaForm }

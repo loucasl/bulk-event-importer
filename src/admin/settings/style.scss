@@ -68,34 +68,47 @@
 	}
 }
 
-.bei-form-fields {
-	display: flex;
-	flex-direction: column;
+.bei-settings-app .dataform .components-v-stack:not( :has( > .dataforms-layouts-regular__header ) ) {
 	gap: 20px;
 }
 
-.bei-form > .bei-settings-section:first-child {
+.bei-settings-app .components-v-stack:has( > .dataforms-layouts-regular__header ) {
+	gap: 0;
+}
+
+.bei-number-field,
+.bei-settings-app .dataforms-layouts-regular__field .components-select-control {
+	max-width: 28rem;
+}
+
+.bei-settings-app .dataforms-layouts-regular__header {
+	margin: 48px 0 12px;
+	padding-top: 32px;
+	border-top: 1px solid #dcdcde;
+
+	.components-heading,
+	h2 {
+		margin: 0;
+		font-size: 1.2em !important;
+		font-weight: 600;
+		line-height: 1.3;
+	}
+}
+
+.bei-settings-app .dataforms-layouts-regular__header:first-child {
 	margin-top: 24px;
 	padding-top: 0;
 	border-top: 0;
 }
 
-.bei-number-field,
-.bei-form-field .components-select-control {
-	max-width: 28rem;
-}
-
 .bei-settings-modules {
-	.bei-form {
-		display: flex;
-		flex-direction: column;
-		gap: 20px;
-		margin-top: 0;
-	}
-
 	.bei-static-meta-fields {
 		margin-top: 8px;
 	}
+}
+
+.bei-settings-modules .dataform {
+	margin-top: 0;
 }
 
 .bei-field-map-group {

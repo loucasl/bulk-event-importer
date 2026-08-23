@@ -68,9 +68,9 @@ Two hooks are available for site-specific behavior that does not belong in the s
 
 ### 2.2.1
 
-- Dropped `@wordpress/dataviews`. The settings page only used DataForm as a section wrapper after later PRs replaced every field editor with custom `@wordpress/components` controls
-- Admin bundle no longer ships DataViews table, filter, and pagination code
-- Removed leftover unused settings helpers (`defaultSettings`, unused discard path, DataForm-only form snapshot)
+- Settings still use WordPress DataForm, but load it from core (`wp-dataviews`) so layout and styles track WordPress instead of a frozen plugin copy
+- Admin bundle no longer compiles DataViews into `settings.js`
+- Removed leftover unused settings helpers from the 2.1 rebuild
 
 ### 2.2.0
 

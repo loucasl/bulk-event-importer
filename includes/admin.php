@@ -54,6 +54,7 @@ add_action( 'admin_enqueue_scripts', function( $hook ) {
             'dependencies' => [
                 'wp-element',
                 'wp-components',
+                'wp-dataviews',
                 'wp-i18n',
                 'wp-api-fetch',
             ],
@@ -73,10 +74,15 @@ add_action( 'admin_enqueue_scripts', function( $hook ) {
     );
 
     if ( file_exists( $style_path ) ) {
+        $style_deps = [ 'wp-components' ];
+        if ( wp_style_is( 'wp-dataviews', 'registered' ) ) {
+            $style_deps[] = 'wp-dataviews';
+        }
+
         wp_enqueue_style(
             'bulk-event-importer-settings',
             BEI_PLUGIN_URL . 'build/style-index.css',
-            [ 'wp-components' ],
+            $style_deps,
             (string) filemtime( $style_path )
         );
     }
