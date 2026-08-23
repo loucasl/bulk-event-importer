@@ -42,16 +42,17 @@ function getTopReasons( skipReasons, max ) {
 		);
 }
 
-function ImportStatBlock( { title, rows } ) {
+function ImportStatBlock( { rows } ) {
 	return (
 		<div className="bei-import-totals">
-			{ title && (
-				<strong className="bei-import-totals-title">{ title }</strong>
-			) }
-			{ rows.map( ( [ label, value ] ) => (
-				<div className="bei-import-totals-row" key={ label }>
-					{ label }{ ' ' }
-					{ value }
+			{ rows.map( ( [ label, value, hint ] ) => (
+				<div
+					className="bei-import-totals-stat"
+					key={ label }
+					title={ hint || undefined }
+				>
+					<span className="bei-import-totals-label">{ label }</span>
+					<span className="bei-import-totals-value">{ value }</span>
 				</div>
 			) ) }
 		</div>
@@ -190,6 +191,7 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 	const [ visible, setVisible ] = useState( false );
 	const jobIdRef = useRef( '' );
 	const perFeedRef = useRef( {} );
+	const followFeedsRef = useRef( false );
 
 	const renderFeedsTable = useCallback( () => {
 		const perFeed = perFeedRef.current;
@@ -203,6 +205,14 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 		}
 
 		return (
+			<div
+				className="bei-import-feed-scroll"
+				ref={ ( node ) => {
+					if ( node && followFeedsRef.current ) {
+						node.scrollTop = node.scrollHeight;
+					}
+				} }
+			>
 			<table className="widefat striped bei-import-feed-table">
 				<thead>
 					<tr>
@@ -255,6 +265,7 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 					} ) }
 				</tbody>
 			</table>
+			</div>
 		);
 	}, [] );
 
@@ -264,6 +275,7 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 		}
 		setRunning( true );
 		cancelRequestedRef.current = false;
+		followFeedsRef.current = true;
 		setVisible( true );
 		setProgress( 0 );
 		setStatusHtml(
@@ -297,6 +309,7 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 
 			const step = async () => {
 				if ( cancelRequestedRef.current ) {
+					followFeedsRef.current = false;
 					setStatusHtml(
 						<p>
 							<strong>
@@ -343,6 +356,7 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 						}
 					}
 					setProgress( 100 );
+					followFeedsRef.current = false;
 					setStatusHtml(
 						<>
 							<div className="bei-import-heading">
@@ -358,53 +372,61 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 										  ) }
 								</strong>
 							</div>
-							{ renderFeedsTable() }
 							<ImportStatBlock
 								rows={ [
 									[
 										__(
-											'Feeds processed:',
+											'Feeds processed',
 											'bulk-event-importer'
 										),
 										Object.keys( perFeedRef.current ).length,
 									],
 									[
 										__(
-											'Events created:',
+											'Created',
 											'bulk-event-importer'
 										),
 										Number( data.totals?.created || 0 ),
 									],
 									[
 										__(
-											'Events updated:',
+											'Updated',
 											'bulk-event-importer'
 										),
 										Number( data.totals?.updated || 0 ),
 									],
 									[
 										__(
-											'Events skipped:',
+											'Skipped',
 											'bulk-event-importer'
 										),
 										Number( data.totals?.skipped || 0 ),
 									],
 									[
 										__(
-											'Blocked/filtered events removed:',
+											'Removed',
 											'bulk-event-importer'
 										),
 										Number( data.totals?.deleted || 0 ),
+										__(
+											'Blocked/filtered events removed',
+											'bulk-event-importer'
+										),
 									],
 									[
 										__(
-											'Old events moved to trash:',
+											'Trashed',
 											'bulk-event-importer'
 										),
 										Number( data.totals?.old_trashed || 0 ),
+										__(
+											'Old events moved to trash',
+											'bulk-event-importer'
+										),
 									],
 								] }
 							/>
+							{ renderFeedsTable() }
 						</>
 					);
 					setRunning( false );
@@ -434,33 +456,29 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 								{ feedCount }
 							</div>
 						</div>
-						{ renderFeedsTable() }
 						{ data.totals ? (
 							<ImportStatBlock
-								title={ __(
-									'Totals so far',
-									'bulk-event-importer'
-								) }
 								rows={ [
 									[
-										__( 'Created:', 'bulk-event-importer' ),
+										__( 'Created', 'bulk-event-importer' ),
 										Number( data.totals.created || 0 ),
 									],
 									[
-										__( 'Updated:', 'bulk-event-importer' ),
+										__( 'Updated', 'bulk-event-importer' ),
 										Number( data.totals.updated || 0 ),
 									],
 									[
-										__( 'Skipped:', 'bulk-event-importer' ),
+										__( 'Skipped', 'bulk-event-importer' ),
 										Number( data.totals.skipped || 0 ),
 									],
 									[
-										__( 'Deleted:', 'bulk-event-importer' ),
+										__( 'Deleted', 'bulk-event-importer' ),
 										Number( data.totals.deleted || 0 ),
 									],
 								] }
 							/>
 						) : null }
+						{ renderFeedsTable() }
 					</>
 				);
 
@@ -469,6 +487,7 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 
 			await step();
 		} catch ( err ) {
+			followFeedsRef.current = false;
 			setStatusHtml(
 				<p className="bei-import-error">
 					<strong>{ __( 'Import failed', 'bulk-event-importer' ) }</strong>
