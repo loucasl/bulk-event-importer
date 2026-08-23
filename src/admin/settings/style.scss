@@ -6,6 +6,15 @@
 		padding: 4px 0;
 		line-height: 1.3;
 	}
+
+	table td {
+		padding-top: 15px;
+		padding-bottom: 15px;
+	}
+
+	p.description {
+		max-width: none;
+	}
 }
 
 .bei-settings-toolbar {
@@ -39,7 +48,6 @@
 
 	> .description {
 		margin: 0 0 8px;
-		max-width: 42em;
 
 		+ .description {
 			margin-bottom: 20px;
@@ -257,10 +265,12 @@
 	.bei-keyword-chips .bei-chips {
 		margin-bottom: 4px;
 	}
+}
 
-	.bei-keyword-chips .components-base-control {
-		margin-top: 12px;
-	}
+.bei-keyword-chips .components-base-control__label {
+	display: block;
+	margin-top: 3px;
+	margin-bottom: 5px;
 }
 
 .bei-row-actions {
@@ -283,6 +293,10 @@
 	flex-wrap: wrap;
 	gap: 8px;
 	margin-left: auto;
+}
+
+.bei-taxonomy-advanced {
+	margin-top: 16px;
 }
 
 .bei-extra-meta-rows {

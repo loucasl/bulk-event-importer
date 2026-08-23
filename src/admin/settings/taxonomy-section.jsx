@@ -29,59 +29,6 @@ function TaxonomyBlock( {
 				</h3>
 			) }
 
-			<TextControl
-				label={ __(
-					'Default category (optional)',
-					'bulk-event-importer'
-				) }
-				value={ taxonomy.default_term }
-				onChange={ ( default_term ) =>
-					onChange( { ...taxonomy, default_term } )
-				}
-				help={ __(
-					'Used when no keywords match.',
-					'bulk-event-importer'
-				) }
-				__next40pxDefaultSize
-			/>
-
-			<AdvancedDisclosure
-				label={ __( 'WordPress taxonomy', 'bulk-event-importer' ) }
-			>
-				<Flex gap={ 4 } wrap className="bei-taxonomy-meta">
-					<FlexBlock>
-						<TextControl
-							label={ __(
-								'WordPress taxonomy',
-								'bulk-event-importer'
-							) }
-							value={ taxonomy.slug }
-							onChange={ ( slug ) =>
-								onChange( { ...taxonomy, slug } )
-							}
-							help={ __(
-								'Must match the JetEngine taxonomy slug on this site.',
-								'bulk-event-importer'
-							) }
-							__next40pxDefaultSize
-						/>
-					</FlexBlock>
-					<FlexBlock>
-						<TextControl
-							label={ __(
-								'Name on this page',
-								'bulk-event-importer'
-							) }
-							value={ taxonomy.label }
-							onChange={ ( label ) =>
-								onChange( { ...taxonomy, label } )
-							}
-							__next40pxDefaultSize
-						/>
-					</FlexBlock>
-				</Flex>
-			</AdvancedDisclosure>
-
 			<table className="widefat fixed striped bei-group-table">
 				<thead>
 					<tr>
@@ -190,6 +137,64 @@ function TaxonomyBlock( {
 						{ __( 'Remove this group', 'bulk-event-importer' ) }
 					</RemoveButton>
 				</div>
+			</div>
+
+			<div className="bei-taxonomy-advanced">
+				<TextControl
+					label={ __(
+						'Default category (optional)',
+						'bulk-event-importer'
+					) }
+					value={ taxonomy.default_term }
+					onChange={ ( default_term ) =>
+						onChange( { ...taxonomy, default_term } )
+					}
+					help={ __(
+						'Used when no keywords match.',
+						'bulk-event-importer'
+					) }
+					__next40pxDefaultSize
+				/>
+
+				<AdvancedDisclosure
+					label={ __(
+						'Show WordPress taxonomy settings',
+						'bulk-event-importer'
+					) }
+				>
+					<Flex gap={ 4 } wrap className="bei-taxonomy-meta">
+						<FlexBlock>
+							<TextControl
+								label={ __(
+									'WordPress taxonomy',
+									'bulk-event-importer'
+								) }
+								value={ taxonomy.slug }
+								onChange={ ( slug ) =>
+									onChange( { ...taxonomy, slug } )
+								}
+								help={ __(
+									'Must match the JetEngine taxonomy slug on this site.',
+									'bulk-event-importer'
+								) }
+								__next40pxDefaultSize
+							/>
+						</FlexBlock>
+						<FlexBlock>
+							<TextControl
+								label={ __(
+									'Name on this page',
+									'bulk-event-importer'
+								) }
+								value={ taxonomy.label }
+								onChange={ ( label ) =>
+									onChange( { ...taxonomy, label } )
+								}
+								__next40pxDefaultSize
+							/>
+						</FlexBlock>
+					</Flex>
+				</AdvancedDisclosure>
 			</div>
 		</div>
 	);
