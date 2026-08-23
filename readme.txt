@@ -4,7 +4,7 @@ Tags: events, import, ics, rss, jetengine
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.1.0
+Stable tag: 2.2.0
 License: GPLv2 or later
 
 Fetches external calendar feeds (RSS/ICS), normalizes them, and creates/updates
@@ -38,6 +38,15 @@ site-specific to belong in the shared codebase:
   integration (e.g. auto-linking to a related custom post type).
 
 == Changelog ==
+
+= 2.2.0 =
+* Reworked Importer Settings copy and layout for non-technical editors
+  (clearer section labels, grouped JetEngine mapping, more spacing).
+* Fixed a bug where editing blocked keywords could turn off Geocoding or the
+  keyword-match filter.
+* Optional modules: Fixed event fields can be toggled off; map field names
+  are hidden behind an advanced disclosure.
+* Remove actions now use outlined buttons and ask for confirmation.
 
 = 2.1.0 =
 * Rebuilt Importer Settings as a React admin page using WordPress DataForm and

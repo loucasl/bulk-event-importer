@@ -24,6 +24,7 @@ export function defaultSettings() {
 		geocoding_lng_meta: '',
 		geocoding_hash_meta: '',
 		geocoding_country_suffix: '',
+		static_meta_enabled: false,
 		taxonomies: [],
 		field_map: {
 			date_mode: 'split',
@@ -48,23 +49,6 @@ export function cloneSettings( data ) {
 
 export function settingsEqual( a, b ) {
 	return JSON.stringify( a ) === JSON.stringify( b );
-}
-
-/**
- * paginationInfo required by DataViews since @wordpress/dataviews 4.x.
- *
- * @param {number} itemCount
- * @param {number} perPage
- * @return {{ totalItems: number, totalPages: number }}
- */
-export function getLocalPaginationInfo( itemCount, perPage = 10 ) {
-	const totalItems = Math.max( 0, itemCount );
-	const pageSize = Math.max( 1, perPage );
-
-	return {
-		totalItems,
-		totalPages: Math.max( 1, Math.ceil( totalItems / pageSize ) ),
-	};
 }
 
 /**
