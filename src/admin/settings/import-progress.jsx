@@ -5,15 +5,6 @@ import {
 } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 
-function escapeHtml( str ) {
-	return String( str || '' )
-		.replace( /&/g, '&amp;' )
-		.replace( /</g, '&lt;' )
-		.replace( />/g, '&gt;' )
-		.replace( /"/g, '&quot;' )
-		.replace( /'/g, '&#039;' );
-}
-
 const SKIP_REASON_LABELS = {
 	blocked_keyword_match: __( 'Blocked keywords', 'bulk-event-importer' ),
 	allowlist_no_match: __( 'No allowlist match', 'bulk-event-importer' ),
@@ -848,7 +839,7 @@ export function ImportProgress( { nonce, toolbar = null } ) {
 				<p className="bei-import-error">
 					<strong>{ __( 'Import failed', 'bulk-event-importer' ) }</strong>
 					<br />
-					{ escapeHtml( err.message ) }
+					{ err.message }
 				</p>
 			);
 			setRunning( false );

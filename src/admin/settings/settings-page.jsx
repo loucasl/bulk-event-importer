@@ -4,13 +4,12 @@ import {
 	Notice,
 	Spinner,
 } from '@wordpress/components';
-import { DataForm } from '@wordpress/dataviews/wp';
+import { DataForm } from '@wordpress/dataviews';
 import { __ } from '@wordpress/i18n';
 import { FieldMappingSection, StaticMetaSection } from './field-mapping-section';
 import { GeocodingAdvancedFields } from './geocoding-fields';
 import {
 	getCoreSettingsFields,
-	getFormData,
 	getOptionalModuleFields,
 	getGeocodingModulesFormLayout,
 	getSettingsFormLayout,
@@ -60,10 +59,6 @@ export function SettingsPage( { nonce } ) {
 	);
 	const geocodingForm = useMemo( () => getGeocodingModulesFormLayout(), [] );
 	const staticMetaForm = useMemo( () => getStaticMetaFormLayout(), [] );
-	const formData = useMemo(
-		() => getFormData( settings ),
-		[ settings ]
-	);
 
 	const handleFormChange = ( edits ) => {
 		updateSettings( ( prev ) => mergeFormData( prev, edits ) );
@@ -116,7 +111,7 @@ export function SettingsPage( { nonce } ) {
 			) }
 
 			<DataForm
-				data={ formData }
+				data={ settings }
 				fields={ coreFields }
 				form={ coreForm }
 				onChange={ handleFormChange }
@@ -141,7 +136,7 @@ export function SettingsPage( { nonce } ) {
 					) }
 				</p>
 				<DataForm
-					data={ formData }
+					data={ settings }
 					fields={ moduleFields }
 					form={ geocodingForm }
 					onChange={ handleFormChange }
@@ -153,7 +148,7 @@ export function SettingsPage( { nonce } ) {
 					/>
 				) }
 				<DataForm
-					data={ formData }
+					data={ settings }
 					fields={ moduleFields }
 					form={ staticMetaForm }
 					onChange={ handleFormChange }

@@ -18,7 +18,7 @@ const MODULE_FIELD_IDS = [
 	'static_meta_enabled',
 ];
 
-export function getSettingsFields() {
+function getSettingsFields() {
 	return [
 		{
 			id: 'feed_urls',
@@ -203,6 +203,10 @@ export function getSettingsFormLayout( feedUrlCount = 0 ) {
 	return {
 		type: 'regular',
 		labelPosition: 'top',
+		layout: {
+			type: 'regular',
+			labelPosition: 'top',
+		},
 		fields: [
 			{
 				id: 'section_feeds',
@@ -229,10 +233,14 @@ export function getSettingsFormLayout( feedUrlCount = 0 ) {
 	};
 }
 
-export function getOptionalModulesFormLayout( fieldIds = MODULE_FIELD_IDS ) {
+function getOptionalModulesFormLayout( fieldIds = MODULE_FIELD_IDS ) {
 	return {
 		type: 'regular',
 		labelPosition: 'top',
+		layout: {
+			type: 'regular',
+			labelPosition: 'top',
+		},
 		fields: fieldIds,
 	};
 }
@@ -245,31 +253,6 @@ export function getGeocodingModulesFormLayout() {
 
 export function getStaticMetaFormLayout() {
 	return getOptionalModulesFormLayout( [ 'static_meta_enabled' ] );
-}
-
-export function getFormData( settings ) {
-	if ( ! settings ) {
-		return {};
-	}
-	return {
-		feed_urls: settings.feed_urls,
-		default_feed_type: settings.default_feed_type,
-		past_days: settings.past_days,
-		future_months: settings.future_months,
-		trash_after_days: settings.trash_after_days,
-		default_post_status: settings.default_post_status,
-		cron_interval: settings.cron_interval,
-		blocked_keywords: settings.blocked_keywords || [],
-		allowlist_enabled: !! settings.allowlist_enabled,
-		allowed_keywords: settings.allowed_keywords || [],
-		geocoding_enabled: !! settings.geocoding_enabled,
-		geocoding_address_metas: settings.geocoding_address_metas,
-		geocoding_lat_meta: settings.geocoding_lat_meta,
-		geocoding_lng_meta: settings.geocoding_lng_meta,
-		geocoding_hash_meta: settings.geocoding_hash_meta,
-		geocoding_country_suffix: settings.geocoding_country_suffix,
-		static_meta_enabled: !! settings.static_meta_enabled,
-	};
 }
 
 export function mergeFormData( settings, formData ) {

@@ -76,12 +76,6 @@ export function useSettings() {
 		}
 	}, [ settings ] );
 
-	const discard = useCallback( () => {
-		if ( saved ) {
-			setSettings( cloneSettings( saved ) );
-		}
-	}, [ saved ] );
-
 	return {
 		settings,
 		isLoading,
@@ -91,7 +85,6 @@ export function useSettings() {
 		updateSettings,
 		updateFieldMap,
 		save,
-		discard,
 		reload: load,
 	};
 }

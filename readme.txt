@@ -4,7 +4,7 @@ Tags: events, import, ics, rss, jetengine
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 License: GPLv2 or later
 
 Fetches external calendar feeds (RSS/ICS), normalizes them, and creates/updates
@@ -38,6 +38,13 @@ site-specific to belong in the shared codebase:
   integration (e.g. auto-linking to a related custom post type).
 
 == Changelog ==
+
+= 2.2.1 =
+* Settings still use WordPress DataForm. The form now loads from WordPress
+  core (wp-dataviews) so layout and styles stay aligned with admin as core
+  evolves, instead of shipping a frozen DataViews copy in the plugin.
+* Admin JS no longer compiles DataViews into settings.js.
+* Removed leftover unused settings helpers from the 2.1 rebuild.
 
 = 2.2.0 =
 * Reworked Importer Settings copy and layout for non-technical editors
