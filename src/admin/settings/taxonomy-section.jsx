@@ -3,7 +3,6 @@ import {
 	Flex,
 	FlexBlock,
 	TextControl,
-	__experimentalVStack as VStack,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { KeywordChips } from './keyword-chips';
@@ -46,7 +45,7 @@ function TaxonomyBlock( { taxonomy, onChange, onRemove } ) {
 							onChange( { ...taxonomy, default_term } )
 						}
 						help={ __(
-							'Applied when nothing matches.',
+							'Used when no keywords match.',
 							'bulk-event-importer'
 						) }
 						__next40pxDefaultSize
@@ -154,12 +153,12 @@ export function TaxonomySection( { taxonomies, onChange } ) {
 			<h2>{ __( 'Categories & Taxonomies', 'bulk-event-importer' ) }</h2>
 			<p className="description">
 				{ __(
-					'Define the taxonomies this site uses and the keyword groups that auto-assign each term. Structure is entirely per-site; nothing here is hardcoded in the plugin.',
+					'Choose which categories events are sorted into based on keywords found in the event title. Each site sets up its own categories here.',
 					'bulk-event-importer'
 				) }
 			</p>
 
-			<VStack spacing={ 6 }>
+			<div className="bei-taxonomy-list">
 				{ ( taxonomies || [] ).map( ( tax, index ) => (
 					<TaxonomyBlock
 						key={ `tax-${ index }-${ tax.slug || 'new' }` }
@@ -180,6 +179,7 @@ export function TaxonomySection( { taxonomies, onChange } ) {
 				<Button
 					type="button"
 					variant="secondary"
+					className="bei-inline-button"
 					onClick={ () =>
 						onChange( [
 							...( taxonomies || [] ),
@@ -194,7 +194,7 @@ export function TaxonomySection( { taxonomies, onChange } ) {
 				>
 					{ __( 'Add taxonomy', 'bulk-event-importer' ) }
 				</Button>
-			</VStack>
+			</div>
 		</section>
 	);
 }

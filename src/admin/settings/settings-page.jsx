@@ -3,7 +3,6 @@ import {
 	Button,
 	Notice,
 	Spinner,
-	__experimentalHStack as HStack,
 } from '@wordpress/components';
 import { DataForm } from '@wordpress/dataviews/wp';
 import { __ } from '@wordpress/i18n';
@@ -27,7 +26,7 @@ import { countFeedUrls } from './utils';
 function SaveButton( { isDirty, isSaving, onSave } ) {
 	return (
 		<Button
-			variant="primary"
+			variant="secondary"
 			onClick={ onSave }
 			disabled={ ! isDirty || isSaving }
 			isBusy={ isSaving }
@@ -70,6 +69,14 @@ export function SettingsPage( { nonce } ) {
 		updateSettings( ( prev ) => mergeFormData( prev, edits ) );
 	};
 
+	const saveButton = (
+		<SaveButton
+			isDirty={ isDirty }
+			isSaving={ isSaving }
+			onSave={ save }
+		/>
+	);
+
 	if ( isLoading ) {
 		return (
 			<div className="bei-settings-loading">
@@ -98,17 +105,9 @@ export function SettingsPage( { nonce } ) {
 
 	return (
 		<div className="bei-settings-app">
-			<HStack className="bei-settings-title-row" alignment="center">
-				<h1>{ __( 'Bulk Event Importer Settings', 'bulk-event-importer' ) }</h1>
-				<HStack className="bei-settings-header-actions" spacing={ 2 }>
-					<SaveButton
-						isDirty={ isDirty }
-						isSaving={ isSaving }
-						onSave={ save }
-					/>
-					<ImportProgress nonce={ nonce } />
-				</HStack>
-			</HStack>
+			<h1>{ __( 'Bulk Event Importer Settings', 'bulk-event-importer' ) }</h1>
+
+			<ImportProgress nonce={ nonce } toolbar={ saveButton } />
 
 			{ error && (
 				<Notice status="error" isDismissible={ false }>
@@ -133,29 +132,30 @@ export function SettingsPage( { nonce } ) {
 				onChange={ ( field_map ) => updateFieldMap( field_map ) }
 			/>
 
-			<StaticMetaSection
-				extraStaticMeta={ settings.field_map?.extra_static_meta || [] }
-				onChange={ ( extra_static_meta ) =>
-					updateFieldMap( { extra_static_meta } )
-				}
-			/>
-
 			<section className="bei-settings-section bei-settings-modules">
 				<h2>{ __( 'Optional Modules', 'bulk-event-importer' ) }</h2>
+				<p className="description">
+					{ __(
+						'Turn on extra features only when your site needs them.',
+						'bulk-event-importer'
+					) }
+				</p>
 				<DataForm
 					data={ formData }
 					fields={ moduleFields }
 					form={ modulesForm }
 					onChange={ handleFormChange }
 				/>
+				<StaticMetaSection
+					extraStaticMeta={ settings.field_map?.extra_static_meta || [] }
+					onChange={ ( extra_static_meta ) =>
+						updateFieldMap( { extra_static_meta } )
+					}
+				/>
 			</section>
 
 			<div className="bei-settings-save-footer">
-				<SaveButton
-					isDirty={ isDirty }
-					isSaving={ isSaving }
-					onSave={ save }
-				/>
+				{ saveButton }
 			</div>
 		</div>
 	);

@@ -32,10 +32,13 @@ export function KeywordChips( {
 		[ keywords, onChange ]
 	);
 
-	const commitInput = useCallback(
+	const commitKeyword = useCallback(
 		( event ) => {
 			event.preventDefault();
 			event.stopPropagation();
+			if ( event.nativeEvent ) {
+				event.nativeEvent.stopImmediatePropagation?.();
+			}
 			addKeyword( input );
 			setInput( '' );
 		},
@@ -43,7 +46,14 @@ export function KeywordChips( {
 	);
 
 	return (
-		<div className="bei-keyword-chips">
+		<div
+			className="bei-keyword-chips"
+			onKeyDownCapture={ ( event ) => {
+				if ( event.key === 'Enter' ) {
+					commitKeyword( event );
+				}
+			} }
+		>
 			{ description && (
 				<p className="description">{ description }</p>
 			) }
@@ -68,30 +78,24 @@ export function KeywordChips( {
 					</span>
 				) ) }
 			</div>
-			<form className="bei-keyword-add-form" onSubmit={ commitInput }>
-				<TextControl
-					label={
-						addLabel ||
-						__( 'Add keyword', 'bulk-event-importer' )
+			<TextControl
+				label={
+					addLabel || __( 'Add keyword', 'bulk-event-importer' )
+				}
+				value={ input }
+				onChange={ setInput }
+				onKeyDown={ ( event ) => {
+					if ( event.key === ',' ) {
+						commitKeyword( event );
 					}
-					value={ input }
-					onChange={ setInput }
-					onKeyDown={ ( event ) => {
-						if ( event.key === ',' ) {
-							event.preventDefault();
-							event.stopPropagation();
-							addKeyword( input );
-							setInput( '' );
-						}
-					} }
-					placeholder={ __(
-						'Type and press Enter',
-						'bulk-event-importer'
-					) }
-					__next40pxDefaultSize
-					__nextHasNoMarginBottom
-				/>
-			</form>
+				} }
+				placeholder={ __(
+					'Type and press Enter',
+					'bulk-event-importer'
+				) }
+				__next40pxDefaultSize
+				__nextHasNoMarginBottom
+			/>
 		</div>
 	);
 }

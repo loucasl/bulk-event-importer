@@ -27,14 +27,14 @@ export function getSettingsFields() {
 			label: __( 'List of URLs', 'bulk-event-importer' ),
 			type: 'text',
 			description: __(
-				'One feed per line: Label | URL or Label | URL | type (type is ics or rss, optional). Lines starting with # are ignored.',
+				'Enter one feed URL per line in the following format: Feed Label | Feed URL | Feed Type (ics or rss, optional). Add a # before each line if you\'d like that feed ignored during imports.',
 				'bulk-event-importer'
 			),
 			Edit: TextareaFieldEdit,
 		},
 		{
 			id: 'default_feed_type',
-			label: __( 'Default type when not specified', 'bulk-event-importer' ),
+			label: __( 'Default feed type', 'bulk-event-importer' ),
 			type: 'text',
 			elements: [
 				{ value: 'ics', label: 'ICS' },
@@ -44,34 +44,25 @@ export function getSettingsFields() {
 		},
 		{
 			id: 'past_days',
-			label: __(
-				'Import events starting up to (days in the past)',
-				'bulk-event-importer'
-			),
+			label: __( 'Include events up to this many days in the past', 'bulk-event-importer' ),
 			type: 'integer',
 			Edit: IntegerFieldEdit,
 		},
 		{
 			id: 'future_months',
-			label: __(
-				'Import events starting up to (months in the future)',
-				'bulk-event-importer'
-			),
+			label: __( 'Include events up to this many months in the future', 'bulk-event-importer' ),
 			type: 'integer',
 			Edit: IntegerFieldEdit,
 		},
 		{
 			id: 'trash_after_days',
-			label: __(
-				'Move past events to trash after (days)',
-				'bulk-event-importer'
-			),
+			label: __( 'Trash events this many days after they end', 'bulk-event-importer' ),
 			type: 'integer',
 			Edit: IntegerFieldEdit,
 		},
 		{
 			id: 'default_post_status',
-			label: __( 'New event post status', 'bulk-event-importer' ),
+			label: __( 'Status for newly imported events', 'bulk-event-importer' ),
 			type: 'text',
 			elements: [
 				{ value: 'publish', label: __( 'Publish', 'bulk-event-importer' ) },
@@ -85,7 +76,7 @@ export function getSettingsFields() {
 		},
 		{
 			id: 'cron_interval',
-			label: __( 'Automatic import runs', 'bulk-event-importer' ),
+			label: __( 'How often to run automatic imports', 'bulk-event-importer' ),
 			type: 'text',
 			elements: [
 				{ value: 'hourly', label: __( 'Every hour', 'bulk-event-importer' ) },
@@ -102,17 +93,17 @@ export function getSettingsFields() {
 			label: '',
 			type: 'text',
 			description: __(
-				'Events whose title contains any of these are skipped on import and removed if already published.',
+				'Events with any of these words in the title will be skipped during import. If an event is already live on your site and matches, it will be removed.',
 				'bulk-event-importer'
 			),
 			Edit: BlockedKeywordsEdit,
 		},
 		{
 			id: 'allowlist_enabled',
-			label: __( 'Allowlist Filter', 'bulk-event-importer' ),
+			label: __( 'Allowlist filter', 'bulk-event-importer' ),
 			type: 'integer',
 			description: __(
-				'Only import events that match at least one allowed keyword (title, location, or link).',
+				'When enabled, only events that match at least one allowed keyword will be imported.',
 				'bulk-event-importer'
 			),
 			Edit: ToggleFieldEdit,
@@ -122,7 +113,7 @@ export function getSettingsFields() {
 			label: __( 'Geocoding', 'bulk-event-importer' ),
 			type: 'integer',
 			description: __(
-				'Look up coordinates for event locations. Requires LL_GOOGLE_GEOCODE_KEY in wp-config.php.',
+				'When enabled, the importer will look up map coordinates for event locations. Requires a Google Geocoding API key defined as LL_GOOGLE_GEOCODE_KEY in wp-config.php.',
 				'bulk-event-importer'
 			),
 			Edit: ToggleFieldEdit,
@@ -132,7 +123,7 @@ export function getSettingsFields() {
 			label: __( 'Allowed keywords', 'bulk-event-importer' ),
 			type: 'text',
 			description: __(
-				'Only import events that match at least one of these keywords (checked against title, location, and link).',
+				'Only events matching at least one of these keywords (checked in the title, location, or link) will be imported.',
 				'bulk-event-importer'
 			),
 			Edit: KeywordChipsEdit,
@@ -140,10 +131,10 @@ export function getSettingsFields() {
 		},
 		{
 			id: 'geocoding_address_metas',
-			label: __( 'Address source meta key(s)', 'bulk-event-importer' ),
+			label: __( 'Address field(s)', 'bulk-event-importer' ),
 			type: 'text',
 			description: __(
-				'Comma-separated if the address is built from more than one field.',
+				'Which JetEngine field holds the address. Use a comma between names if the address is split across multiple fields.',
 				'bulk-event-importer'
 			),
 			isVisible: ( item ) => !! item.geocoding_enabled,
@@ -151,28 +142,28 @@ export function getSettingsFields() {
 		},
 		{
 			id: 'geocoding_lat_meta',
-			label: __( 'Latitude meta key', 'bulk-event-importer' ),
+			label: __( 'Latitude field', 'bulk-event-importer' ),
 			type: 'text',
 			isVisible: ( item ) => !! item.geocoding_enabled,
 			Edit: TextFieldEdit,
 		},
 		{
 			id: 'geocoding_lng_meta',
-			label: __( 'Longitude meta key', 'bulk-event-importer' ),
+			label: __( 'Longitude field', 'bulk-event-importer' ),
 			type: 'text',
 			isVisible: ( item ) => !! item.geocoding_enabled,
 			Edit: TextFieldEdit,
 		},
 		{
 			id: 'geocoding_hash_meta',
-			label: __( 'Hash meta key (optional)', 'bulk-event-importer' ),
+			label: __( 'Location hash field (optional)', 'bulk-event-importer' ),
 			type: 'text',
 			isVisible: ( item ) => !! item.geocoding_enabled,
 			Edit: TextFieldEdit,
 		},
 		{
 			id: 'geocoding_country_suffix',
-			label: __( 'Country suffix (optional)', 'bulk-event-importer' ),
+			label: __( 'Country to append to addresses (optional)', 'bulk-event-importer' ),
 			type: 'text',
 			isVisible: ( item ) => !! item.geocoding_enabled,
 			Edit: TextFieldEdit,
@@ -213,7 +204,7 @@ export function getSettingsFormLayout( feedUrlCount = 0 ) {
 			},
 			{
 				id: 'section_window',
-				label: __( 'Import Window & Status', 'bulk-event-importer' ),
+				label: __( 'Import window & status', 'bulk-event-importer' ),
 				children: [
 					'past_days',
 					'future_months',

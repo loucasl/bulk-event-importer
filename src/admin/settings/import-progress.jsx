@@ -166,7 +166,7 @@ function FeedDebugDetails( { feed } ) {
 	);
 }
 
-export function ImportProgress( { nonce } ) {
+export function ImportProgress( { nonce, toolbar = null } ) {
 	const [ running, setRunning ] = useState( false );
 	const cancelRequestedRef = useRef( false );
 	const autoStartedRef = useRef( false );
@@ -463,8 +463,9 @@ export function ImportProgress( { nonce } ) {
 	}, [] );
 
 	return (
-		<div className="bei-settings-header">
-			<div className="bei-settings-header-actions">
+		<div className="bei-import-progress-root">
+			<div className="bei-settings-toolbar">
+				{ toolbar }
 				{ running && (
 					<Button variant="secondary" onClick={ requestCancel }>
 						{ __( 'Cancel Import', 'bulk-event-importer' ) }

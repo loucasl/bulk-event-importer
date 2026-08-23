@@ -2,9 +2,21 @@ import {
 	Button,
 	SelectControl,
 	TextControl,
-	__experimentalVStack as VStack,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+
+function MapField( { label, value, onChange, className = '' } ) {
+	return (
+		<TextControl
+			className={ className }
+			label={ label }
+			value={ value }
+			onChange={ onChange }
+			__next40pxDefaultSize
+			__nextHasNoMarginBottom
+		/>
+	);
+}
 
 export function FieldMappingSection( { fieldMap, onChange } ) {
 	const isSplit = fieldMap.date_mode === 'split';
@@ -19,124 +31,92 @@ export function FieldMappingSection( { fieldMap, onChange } ) {
 			<h2>{ __( 'JetEngine Field Mapping', 'bulk-event-importer' ) }</h2>
 			<p className="description">
 				{ __(
-					'Map internal event data to this site\'s actual JetEngine meta keys. Leave a field blank to skip writing it. Check a field\'s meta key under Custom Fields in JetEngine\'s field group editor.',
+					'Tell the importer which JetEngine custom fields each piece of event data should be saved to. Leave a field blank if your site does not use it. You can find each field\'s meta key in JetEngine under Custom Fields.',
 					'bulk-event-importer'
 				) }
 			</p>
-			<VStack spacing={ 4 }>
-				<SelectControl
-					label={ __( 'Date field type', 'bulk-event-importer' ) }
-					value={ fieldMap.date_mode }
-					onChange={ ( value ) => setField( 'date_mode', value ) }
-					__next40pxDefaultSize
-					options={ [
-						{
-							label: __(
-								'Separate start/end date + time fields',
-								'bulk-event-importer'
-							),
-							value: 'split',
-						},
-						{
-							label: __(
-								'JetEngine "Advanced Date" field',
-								'bulk-event-importer'
-							),
-							value: 'je_advanced_date',
-						},
-					] }
-				/>
+			<SelectControl
+				className="bei-field-map-full"
+				label={ __( 'How are dates stored on this site?', 'bulk-event-importer' ) }
+				value={ fieldMap.date_mode }
+				onChange={ ( value ) => setField( 'date_mode', value ) }
+				__next40pxDefaultSize
+				options={ [
+					{
+						label: __(
+							'Separate start and end date/time fields',
+							'bulk-event-importer'
+						),
+						value: 'split',
+					},
+					{
+						label: __(
+							'One JetEngine Advanced Date field',
+							'bulk-event-importer'
+						),
+						value: 'je_advanced_date',
+					},
+				] }
+			/>
+			<div className="bei-field-map-grid">
 				{ isSplit && (
 					<>
-						<TextControl
-							label={ __(
-								'Start date meta key',
-								'bulk-event-importer'
-							) }
+						<MapField
+							label={ __( 'Start date field', 'bulk-event-importer' ) }
 							value={ fieldMap.start_date_meta }
-							onChange={ ( v ) =>
-								setField( 'start_date_meta', v )
-							}
-							__next40pxDefaultSize
+							onChange={ ( v ) => setField( 'start_date_meta', v ) }
 						/>
-						<TextControl
-							label={ __(
-								'End date meta key',
-								'bulk-event-importer'
-							) }
+						<MapField
+							label={ __( 'End date field', 'bulk-event-importer' ) }
 							value={ fieldMap.end_date_meta }
 							onChange={ ( v ) => setField( 'end_date_meta', v ) }
-							__next40pxDefaultSize
 						/>
 					</>
 				) }
 				{ isJe && (
-					<TextControl
-						label={ __(
-							'Advanced Date meta key',
-							'bulk-event-importer'
-						) }
+					<MapField
+						className="bei-field-map-full"
+						label={ __( 'Advanced Date field', 'bulk-event-importer' ) }
 						value={ fieldMap.je_date_meta }
 						onChange={ ( v ) => setField( 'je_date_meta', v ) }
-						__next40pxDefaultSize
 					/>
 				) }
-				<TextControl
-					label={ __( 'Start time meta key', 'bulk-event-importer' ) }
+				<MapField
+					label={ __( 'Start time field', 'bulk-event-importer' ) }
 					value={ fieldMap.start_time_meta }
 					onChange={ ( v ) => setField( 'start_time_meta', v ) }
-					__next40pxDefaultSize
 				/>
-				<TextControl
-					label={ __( 'End time meta key', 'bulk-event-importer' ) }
+				<MapField
+					label={ __( 'End time field', 'bulk-event-importer' ) }
 					value={ fieldMap.end_time_meta }
 					onChange={ ( v ) => setField( 'end_time_meta', v ) }
-					__next40pxDefaultSize
 				/>
-				<TextControl
-					label={ __( 'Location meta key', 'bulk-event-importer' ) }
+				<MapField
+					label={ __( 'Location field', 'bulk-event-importer' ) }
 					value={ fieldMap.location_meta }
 					onChange={ ( v ) => setField( 'location_meta', v ) }
-					__next40pxDefaultSize
 				/>
-				<TextControl
-					label={ __(
-						'Long description meta key (optional)',
-						'bulk-event-importer'
-					) }
+				<MapField
+					label={ __( 'Long description field (optional)', 'bulk-event-importer' ) }
 					value={ fieldMap.description_long_meta }
-					onChange={ ( v ) =>
-						setField( 'description_long_meta', v )
-					}
-					__next40pxDefaultSize
+					onChange={ ( v ) => setField( 'description_long_meta', v ) }
 				/>
-				<TextControl
-					label={ __(
-						'Short description meta key (optional)',
-						'bulk-event-importer'
-					) }
+				<MapField
+					label={ __( 'Short description field (optional)', 'bulk-event-importer' ) }
 					value={ fieldMap.description_short_meta }
-					onChange={ ( v ) =>
-						setField( 'description_short_meta', v )
-					}
-					__next40pxDefaultSize
+					onChange={ ( v ) => setField( 'description_short_meta', v ) }
 				/>
-				<TextControl
-					label={ __(
-						'External URL meta key',
-						'bulk-event-importer'
-					) }
+				<MapField
+					label={ __( 'External link field', 'bulk-event-importer' ) }
 					value={ fieldMap.external_url_meta }
 					onChange={ ( v ) => setField( 'external_url_meta', v ) }
-					__next40pxDefaultSize
 				/>
-				<TextControl
-					label={ __( 'Source meta key', 'bulk-event-importer' ) }
+				<MapField
+					label={ __( 'Source/calendar name field', 'bulk-event-importer' ) }
 					value={ fieldMap.source_meta }
 					onChange={ ( v ) => setField( 'source_meta', v ) }
-					__next40pxDefaultSize
 				/>
-			</VStack>
+			</div>
 		</section>
 	);
 }
@@ -145,13 +125,14 @@ export function StaticMetaSection( { extraStaticMeta, onChange } ) {
 	const rows = extraStaticMeta || [];
 
 	return (
-		<section className="bei-settings-section">
-			<h2>
+		<div className="bei-static-meta-block">
+			<h3>{ __( 'Fixed event fields', 'bulk-event-importer' ) }</h3>
+			<p className="description">
 				{ __(
-					'Static meta (optional, written on every create/update)',
+					'Set the same JetEngine field value on every imported event — for example, a default button label or a "ticketed: no" flag. Most sites can leave this empty.',
 					'bulk-event-importer'
 				) }
-			</h2>
+			</p>
 			<div className="bei-extra-meta-rows">
 				{ rows.map( ( row, index ) => (
 					<div className="bei-extra-row" key={ `extra-${ index }` }>
@@ -163,7 +144,7 @@ export function StaticMetaSection( { extraStaticMeta, onChange } ) {
 								onChange( next );
 							} }
 							placeholder={ __(
-								'Meta key',
+								'Field name',
 								'bulk-event-importer'
 							) }
 							hideLabelFromVision
@@ -195,7 +176,7 @@ export function StaticMetaSection( { extraStaticMeta, onChange } ) {
 								)
 							}
 							aria-label={ __(
-								'Remove static meta field',
+								'Remove fixed field',
 								'bulk-event-importer'
 							) }
 						>
@@ -207,12 +188,13 @@ export function StaticMetaSection( { extraStaticMeta, onChange } ) {
 			<Button
 				type="button"
 				variant="secondary"
+				className="bei-inline-button"
 				onClick={ () =>
 					onChange( [ ...rows, { key: '', value: '' } ] )
 				}
 			>
-				{ __( 'Add static meta field', 'bulk-event-importer' ) }
+				{ __( 'Add fixed field', 'bulk-event-importer' ) }
 			</Button>
-		</section>
+		</div>
 	);
 }
