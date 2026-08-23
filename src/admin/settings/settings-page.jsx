@@ -6,10 +6,8 @@ import {
 } from '@wordpress/components';
 import { DataForm } from '@wordpress/dataviews/wp';
 import { __ } from '@wordpress/i18n';
-import {
-	FieldMappingSection,
-	StaticMetaSection,
-} from './field-mapping-section';
+import { FieldMappingSection, StaticMetaSection } from './field-mapping-section';
+import { GeocodingAdvancedFields } from './geocoding-fields';
 import {
 	getCoreSettingsFields,
 	getFormData,
@@ -146,6 +144,12 @@ export function SettingsPage( { nonce } ) {
 					form={ modulesForm }
 					onChange={ handleFormChange }
 				/>
+				{ settings.geocoding_enabled && (
+					<GeocodingAdvancedFields
+						settings={ settings }
+						onChange={ updateSettings }
+					/>
+				) }
 				{ settings.static_meta_enabled && (
 					<StaticMetaSection
 						extraStaticMeta={ settings.field_map?.extra_static_meta || [] }

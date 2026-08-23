@@ -14,9 +14,6 @@ const MODULE_FIELD_IDS = [
 	'allowed_keywords',
 	'geocoding_enabled',
 	'geocoding_address_metas',
-	'geocoding_lat_meta',
-	'geocoding_lng_meta',
-	'geocoding_hash_meta',
 	'geocoding_country_suffix',
 	'static_meta_enabled',
 ];
@@ -38,9 +35,22 @@ export function getSettingsFields() {
 			label: __( 'Default feed type', 'bulk-event-importer' ),
 			type: 'text',
 			elements: [
-				{ value: 'ics', label: 'ICS' },
-				{ value: 'rss', label: 'RSS' },
+				{
+					value: 'ics',
+					label: __( 'ICS (Calendar Feed)', 'bulk-event-importer' ),
+				},
+				{
+					value: 'rss',
+					label: __(
+						'RSS (Event / News Feed)',
+						'bulk-event-importer'
+					),
+				},
 			],
+			description: __(
+				'If you’re not sure, leave ICS (Calendar Feed). You can also put ics or rss at the end of a feed line to override this for that feed.',
+				'bulk-event-importer'
+			),
 			Edit: SelectFieldEdit,
 		},
 		{
@@ -101,10 +111,13 @@ export function getSettingsFields() {
 		},
 		{
 			id: 'allowlist_enabled',
-			label: __( 'Allowlist filter', 'bulk-event-importer' ),
+			label: __(
+				'Only import events with a required keyword',
+				'bulk-event-importer'
+			),
 			type: 'integer',
 			description: __(
-				'When enabled, only events that match at least one allowed keyword will be imported.',
+				'When this is on, an event is imported only if its title, location, or link contains one of the keywords below.',
 				'bulk-event-importer'
 			),
 			Edit: ToggleFieldEdit,
@@ -121,10 +134,10 @@ export function getSettingsFields() {
 		},
 		{
 			id: 'allowed_keywords',
-			label: __( 'Allowed keywords', 'bulk-event-importer' ),
+			label: __( 'Required keywords', 'bulk-event-importer' ),
 			type: 'text',
 			description: __(
-				'Only events matching at least one of these keywords (checked in the title, location, or link) will be imported.',
+				'Events must match at least one of these keywords in the title, location, or link.',
 				'bulk-event-importer'
 			),
 			Edit: KeywordChipsEdit,
@@ -142,30 +155,13 @@ export function getSettingsFields() {
 			Edit: TextFieldEdit,
 		},
 		{
-			id: 'geocoding_lat_meta',
-			label: __( 'Latitude field', 'bulk-event-importer' ),
-			type: 'text',
-			isVisible: ( item ) => !! item.geocoding_enabled,
-			Edit: TextFieldEdit,
-		},
-		{
-			id: 'geocoding_lng_meta',
-			label: __( 'Longitude field', 'bulk-event-importer' ),
-			type: 'text',
-			isVisible: ( item ) => !! item.geocoding_enabled,
-			Edit: TextFieldEdit,
-		},
-		{
-			id: 'geocoding_hash_meta',
-			label: __( 'Location hash field (optional)', 'bulk-event-importer' ),
-			type: 'text',
-			isVisible: ( item ) => !! item.geocoding_enabled,
-			Edit: TextFieldEdit,
-		},
-		{
 			id: 'geocoding_country_suffix',
 			label: __( 'Country to append to addresses (optional)', 'bulk-event-importer' ),
 			type: 'text',
+			description: __(
+				'Added to the end of the address when looking up coordinates, for example Canada.',
+				'bulk-event-importer'
+			),
 			isVisible: ( item ) => !! item.geocoding_enabled,
 			Edit: TextFieldEdit,
 		},

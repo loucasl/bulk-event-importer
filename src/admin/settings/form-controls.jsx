@@ -40,10 +40,7 @@ export function SelectFieldEdit( { data, field, onChange, hideLabelFromVision } 
 		[ id, onChange ]
 	);
 
-	const options = [
-		{ label: __( 'Select item', 'bulk-event-importer' ), value: '' },
-		...( field?.elements ?? [] ),
-	];
+	const options = field?.elements ?? [];
 
 	return (
 		<SelectControl

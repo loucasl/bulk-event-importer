@@ -5,50 +5,82 @@ import {
 	TextControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import { AdvancedDisclosure } from './advanced-disclosure';
 import { KeywordChips } from './keyword-chips';
 import { RemoveButton } from './remove-button';
 import { genGroupKey } from './utils';
 
-function TaxonomyBlock( { taxonomy, onChange, onRemove, onAddTaxonomy, showAddTaxonomy } ) {
+function TaxonomyBlock( {
+	taxonomy,
+	onChange,
+	onRemove,
+	onAddGroup,
+	showAddGroup,
+	showHeading,
+} ) {
 	const groups = taxonomy.groups || [];
 
 	return (
 		<div className="bei-taxonomy-block">
-			<Flex gap={ 4 } wrap className="bei-taxonomy-meta">
-				<FlexBlock>
-					<TextControl
-						label={ __( 'Taxonomy slug', 'bulk-event-importer' ) }
-						value={ taxonomy.slug }
-						onChange={ ( slug ) => onChange( { ...taxonomy, slug } ) }
-						__next40pxDefaultSize
-					/>
-				</FlexBlock>
-				<FlexBlock>
-					<TextControl
-						label={ __( 'Display label', 'bulk-event-importer' ) }
-						value={ taxonomy.label }
-						onChange={ ( label ) => onChange( { ...taxonomy, label } ) }
-						__next40pxDefaultSize
-					/>
-				</FlexBlock>
-				<FlexBlock>
-					<TextControl
-						label={ __(
-							'Default category (optional)',
-							'bulk-event-importer'
-						) }
-						value={ taxonomy.default_term }
-						onChange={ ( default_term ) =>
-							onChange( { ...taxonomy, default_term } )
-						}
-						help={ __(
-							'Used when no keywords match.',
-							'bulk-event-importer'
-						) }
-						__next40pxDefaultSize
-					/>
-				</FlexBlock>
-			</Flex>
+			{ showHeading && (
+				<h3 className="bei-taxonomy-block-title">
+					{ taxonomy.label ||
+						__( 'New category group', 'bulk-event-importer' ) }
+				</h3>
+			) }
+
+			<TextControl
+				label={ __(
+					'Default category (optional)',
+					'bulk-event-importer'
+				) }
+				value={ taxonomy.default_term }
+				onChange={ ( default_term ) =>
+					onChange( { ...taxonomy, default_term } )
+				}
+				help={ __(
+					'Used when no keywords match.',
+					'bulk-event-importer'
+				) }
+				__next40pxDefaultSize
+			/>
+
+			<AdvancedDisclosure
+				label={ __( 'WordPress taxonomy', 'bulk-event-importer' ) }
+			>
+				<Flex gap={ 4 } wrap className="bei-taxonomy-meta">
+					<FlexBlock>
+						<TextControl
+							label={ __(
+								'WordPress taxonomy',
+								'bulk-event-importer'
+							) }
+							value={ taxonomy.slug }
+							onChange={ ( slug ) =>
+								onChange( { ...taxonomy, slug } )
+							}
+							help={ __(
+								'Must match the JetEngine taxonomy slug on this site.',
+								'bulk-event-importer'
+							) }
+							__next40pxDefaultSize
+						/>
+					</FlexBlock>
+					<FlexBlock>
+						<TextControl
+							label={ __(
+								'Name on this page',
+								'bulk-event-importer'
+							) }
+							value={ taxonomy.label }
+							onChange={ ( label ) =>
+								onChange( { ...taxonomy, label } )
+							}
+							__next40pxDefaultSize
+						/>
+					</FlexBlock>
+				</Flex>
+			</AdvancedDisclosure>
 
 			<table className="widefat fixed striped bei-group-table">
 				<thead>
@@ -86,7 +118,10 @@ function TaxonomyBlock( { taxonomy, onChange, onRemove, onAddTaxonomy, showAddTa
 										);
 										onChange( { ...taxonomy, groups: nextGroups } );
 									} }
-									addLabel={ __( 'Add keyword', 'bulk-event-importer' ) }
+									addLabel={ __(
+										'Add keyword',
+										'bulk-event-importer'
+									) }
 								/>
 							</td>
 							<td className="bei-row-actions">
@@ -132,24 +167,27 @@ function TaxonomyBlock( { taxonomy, onChange, onRemove, onAddTaxonomy, showAddTa
 					{ __( 'Add category', 'bulk-event-importer' ) }
 				</Button>
 				<div className="bei-taxonomy-actions-end">
-					{ showAddTaxonomy && (
+					{ showAddGroup && (
 						<Button
 							type="button"
 							variant="secondary"
 							className="bei-inline-button"
-							onClick={ onAddTaxonomy }
+							onClick={ onAddGroup }
 						>
-							{ __( 'Add taxonomy', 'bulk-event-importer' ) }
+							{ __(
+								'Add another category group',
+								'bulk-event-importer'
+							) }
 						</Button>
 					) }
 					<RemoveButton
 						confirmMessage={ __(
-							'Remove this taxonomy and all of its categories?',
+							'Remove this category group and all of its categories?',
 							'bulk-event-importer'
 						) }
 						onConfirm={ onRemove }
 					>
-						{ __( 'Remove taxonomy', 'bulk-event-importer' ) }
+						{ __( 'Remove this group', 'bulk-event-importer' ) }
 					</RemoveButton>
 				</div>
 			</div>
@@ -173,7 +211,7 @@ export function TaxonomySection( { taxonomies, onChange } ) {
 			? list[ 0 ].label
 			: __( 'Event Categories', 'bulk-event-importer' );
 
-	const addTaxonomy = () => onChange( [ ...list, emptyTaxonomy() ] );
+	const addGroup = () => onChange( [ ...list, emptyTaxonomy() ] );
 
 	return (
 		<section className="bei-settings-section bei-settings-taxonomies">
@@ -184,12 +222,19 @@ export function TaxonomySection( { taxonomies, onChange } ) {
 					'bulk-event-importer'
 				) }
 			</p>
+			<p className="description">
+				{ __(
+					'Use “Add another category group” only if events are also tagged another way, such as Audience.',
+					'bulk-event-importer'
+				) }
+			</p>
 
 			<div className="bei-taxonomy-list">
 				{ list.map( ( tax, index ) => (
 					<TaxonomyBlock
 						key={ `tax-${ index }-${ tax.slug || 'new' }` }
 						taxonomy={ tax }
+						showHeading={ list.length > 1 }
 						onChange={ ( updated ) => {
 							const next = [ ...list ];
 							next[ index ] = updated;
@@ -198,8 +243,8 @@ export function TaxonomySection( { taxonomies, onChange } ) {
 						onRemove={ () => {
 							onChange( list.filter( ( _, i ) => i !== index ) );
 						} }
-						onAddTaxonomy={ addTaxonomy }
-						showAddTaxonomy={ index === list.length - 1 }
+						onAddGroup={ addGroup }
+						showAddGroup={ index === list.length - 1 }
 					/>
 				) ) }
 
@@ -208,9 +253,12 @@ export function TaxonomySection( { taxonomies, onChange } ) {
 						type="button"
 						variant="secondary"
 						className="bei-inline-button"
-						onClick={ addTaxonomy }
+						onClick={ addGroup }
 					>
-						{ __( 'Add taxonomy', 'bulk-event-importer' ) }
+						{ __(
+							'Add another category group',
+							'bulk-event-importer'
+						) }
 					</Button>
 				) }
 			</div>
