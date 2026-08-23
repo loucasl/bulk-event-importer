@@ -4,7 +4,7 @@ A WordPress plugin that fetches external calendar feeds (RSS/ICS), normalizes th
 
 | | |
 |---|---|
-| **Version** | 2.0.0 |
+| **Version** | 2.0.1 |
 | **Requires WordPress** | 6.0+ |
 | **Tested up to** | 6.7 |
 | **Requires PHP** | 7.4+ |
@@ -52,6 +52,10 @@ Two hooks are available for site-specific behavior that does not belong in the s
 | `bei_after_upsert_event_post` | Action | Fires after every create/update; args: `$post_id`, `$event`, `$status`. Useful for linking to a related custom post type |
 
 ## Changelog
+
+### 2.0.1
+
+- Importer Settings: optional modules (Allowlist Filter, Geocoding) now appear in a top-of-page card grid with enable toggles that show or hide each module's settings section
 
 ### 2.0.0
 

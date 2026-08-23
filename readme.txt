@@ -4,7 +4,7 @@ Tags: events, import, ics, rss, jetengine
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv2 or later
 
 Fetches external calendar feeds (RSS/ICS), normalizes them, and creates/updates
@@ -38,6 +38,11 @@ site-specific to belong in the shared codebase:
   integration (e.g. auto-linking to a related custom post type).
 
 == Changelog ==
+
+= 2.0.1 =
+* Importer Settings: optional modules (Allowlist Filter, Geocoding) now appear
+  in a top-of-page card grid with enable toggles that show or hide each
+  module's settings section.
 
 = 2.0.0 =
 * Unified codebase merging two previously-forked, site-specific versions.
