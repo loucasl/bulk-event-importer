@@ -1,8 +1,11 @@
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	BlockedKeywordsEdit,
+	IntegerFieldEdit,
 	KeywordChipsEdit,
+	SelectFieldEdit,
 	TextareaFieldEdit,
+	TextFieldEdit,
 	ToggleFieldEdit,
 } from './form-controls';
 
@@ -37,6 +40,7 @@ export function getSettingsFields() {
 				{ value: 'ics', label: 'ICS' },
 				{ value: 'rss', label: 'RSS' },
 			],
+			Edit: SelectFieldEdit,
 		},
 		{
 			id: 'past_days',
@@ -45,6 +49,7 @@ export function getSettingsFields() {
 				'bulk-event-importer'
 			),
 			type: 'integer',
+			Edit: IntegerFieldEdit,
 		},
 		{
 			id: 'future_months',
@@ -53,6 +58,7 @@ export function getSettingsFields() {
 				'bulk-event-importer'
 			),
 			type: 'integer',
+			Edit: IntegerFieldEdit,
 		},
 		{
 			id: 'trash_after_days',
@@ -61,6 +67,7 @@ export function getSettingsFields() {
 				'bulk-event-importer'
 			),
 			type: 'integer',
+			Edit: IntegerFieldEdit,
 		},
 		{
 			id: 'default_post_status',
@@ -74,6 +81,7 @@ export function getSettingsFields() {
 				},
 				{ value: 'draft', label: __( 'Draft', 'bulk-event-importer' ) },
 			],
+			Edit: SelectFieldEdit,
 		},
 		{
 			id: 'cron_interval',
@@ -87,6 +95,7 @@ export function getSettingsFields() {
 				},
 				{ value: 'daily', label: __( 'Once a day', 'bulk-event-importer' ) },
 			],
+			Edit: SelectFieldEdit,
 		},
 		{
 			id: 'blocked_keywords',
@@ -138,30 +147,35 @@ export function getSettingsFields() {
 				'bulk-event-importer'
 			),
 			isVisible: ( item ) => !! item.geocoding_enabled,
+			Edit: TextFieldEdit,
 		},
 		{
 			id: 'geocoding_lat_meta',
 			label: __( 'Latitude meta key', 'bulk-event-importer' ),
 			type: 'text',
 			isVisible: ( item ) => !! item.geocoding_enabled,
+			Edit: TextFieldEdit,
 		},
 		{
 			id: 'geocoding_lng_meta',
 			label: __( 'Longitude meta key', 'bulk-event-importer' ),
 			type: 'text',
 			isVisible: ( item ) => !! item.geocoding_enabled,
+			Edit: TextFieldEdit,
 		},
 		{
 			id: 'geocoding_hash_meta',
 			label: __( 'Hash meta key (optional)', 'bulk-event-importer' ),
 			type: 'text',
 			isVisible: ( item ) => !! item.geocoding_enabled,
+			Edit: TextFieldEdit,
 		},
 		{
 			id: 'geocoding_country_suffix',
 			label: __( 'Country suffix (optional)', 'bulk-event-importer' ),
 			type: 'text',
 			isVisible: ( item ) => !! item.geocoding_enabled,
+			Edit: TextFieldEdit,
 		},
 	];
 }

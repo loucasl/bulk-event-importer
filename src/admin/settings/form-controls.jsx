@@ -1,9 +1,86 @@
 import { useCallback } from '@wordpress/element';
 import {
+	SelectControl,
 	TextareaControl,
+	TextControl,
 	ToggleControl,
+	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
 import { KeywordChips } from './keyword-chips';
+
+export function TextFieldEdit( { data, field, onChange, hideLabelFromVision } ) {
+	const { id, label, description, placeholder } = field;
+	const value = field.getValue( { item: data } ) ?? '';
+
+	const onChangeControl = useCallback(
+		( newValue ) => onChange( { [ id ]: newValue } ),
+		[ id, onChange ]
+	);
+
+	return (
+		<TextControl
+			label={ hideLabelFromVision ? undefined : label }
+			help={ description }
+			placeholder={ placeholder }
+			value={ value }
+			onChange={ onChangeControl }
+			__next40pxDefaultSize
+			__nextHasNoMarginBottom
+		/>
+	);
+}
+
+export function SelectFieldEdit( { data, field, onChange, hideLabelFromVision } ) {
+	const { id, label, description } = field;
+	const value = field.getValue( { item: data } ) ?? '';
+
+	const onChangeControl = useCallback(
+		( newValue ) => onChange( { [ id ]: newValue } ),
+		[ id, onChange ]
+	);
+
+	const options = [
+		{ label: __( 'Select item', 'bulk-event-importer' ), value: '' },
+		...( field?.elements ?? [] ),
+	];
+
+	return (
+		<SelectControl
+			label={ hideLabelFromVision ? undefined : label }
+			help={ description }
+			value={ value }
+			options={ options }
+			onChange={ onChangeControl }
+			__next40pxDefaultSize
+			__nextHasNoMarginBottom
+		/>
+	);
+}
+
+export function IntegerFieldEdit( { data, field, onChange, hideLabelFromVision } ) {
+	const { id, label, description } = field;
+	const value = field.getValue( { item: data } ) ?? '';
+
+	const onChangeControl = useCallback(
+		( newValue ) =>
+			onChange( {
+				[ id ]: newValue === undefined || newValue === '' ? '' : Number( newValue ),
+			} ),
+		[ id, onChange ]
+	);
+
+	return (
+		<NumberControl
+			label={ hideLabelFromVision ? undefined : label }
+			help={ description }
+			value={ value }
+			onChange={ onChangeControl }
+			__next40pxDefaultSize
+			__nextHasNoMarginBottom
+		/>
+	);
+}
 
 export function TextareaFieldEdit( { data, field, onChange, hideLabelFromVision } ) {
 	const { id, label, description } = field;
