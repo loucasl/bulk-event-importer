@@ -112,13 +112,96 @@
   font-size: 12px;
 }
 
-.bulk-event-importer-settings .bei-toggle {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 14px;
+/* Optional modules grid */
+.bulk-event-importer-settings .bei-modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
 }
-.bulk-event-importer-settings .bei-toggle input {
-  margin-right: 8px;
+
+.bulk-event-importer-settings .bei-module-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid #c3c4c7;
+  border-radius: 6px;
+  background: #fbfbfc;
+}
+
+.bulk-event-importer-settings .bei-module-card-body {
+  min-width: 0;
+}
+
+.bulk-event-importer-settings .bei-module-card-title {
+  margin: 0 0 6px;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.bulk-event-importer-settings .bei-module-card-desc {
+  margin: 0;
+  color: #50575e;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.bulk-event-importer-settings .bei-module-switch {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  cursor: pointer;
+}
+
+.bulk-event-importer-settings .bei-module-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+}
+
+.bulk-event-importer-settings .bei-module-switch-ui {
+  display: block;
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: #c3c4c7;
+  transition: background 0.15s ease;
+}
+
+.bulk-event-importer-settings .bei-module-switch-ui::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease;
+}
+
+.bulk-event-importer-settings .bei-module-switch input:checked + .bei-module-switch-ui {
+  background: #2271b1;
+}
+
+.bulk-event-importer-settings .bei-module-switch input:checked + .bei-module-switch-ui::after {
+  transform: translateX(16px);
+}
+
+.bulk-event-importer-settings .bei-module-switch input:focus-visible + .bei-module-switch-ui {
+  outline: 2px solid #2271b1;
+  outline-offset: 2px;
+}
+
+.bulk-event-importer-settings .bei-module-panel[hidden] {
+  display: none;
 }
 
 /* Taxonomy builder */
