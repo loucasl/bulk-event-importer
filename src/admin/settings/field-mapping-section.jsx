@@ -150,6 +150,7 @@ export function FieldMappingSection( { fieldMap, onChange } ) {
 					onChange={ ( v ) => setField( 'external_url_meta', v ) }
 				/>
 				<MapField
+					className="bei-field-map-full"
 					label={ __(
 						'Source/calendar name field',
 						'bulk-event-importer'

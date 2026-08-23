@@ -2,18 +2,22 @@
 	max-width: 900px;
 
 	h1 {
-		margin: 0 0 12px;
+		margin: 0 0 16px;
 		padding: 4px 0;
 		line-height: 1.3;
 	}
 
 	table td {
-		padding-top: 15px;
-		padding-bottom: 15px;
+		padding-top: 16px;
+		padding-bottom: 16px;
 	}
 
 	p.description {
 		max-width: none;
+	}
+
+	.components-base-control__help {
+		margin-top: 8px;
 	}
 }
 
@@ -21,7 +25,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 8px;
+	gap: 12px;
 	margin-bottom: 16px;
 }
 
@@ -59,12 +63,24 @@
 	}
 }
 
-.bei-settings-app .components-v-stack:has(> .dataforms-layouts-regular__header) {
+.bei-settings-app .dataform .components-v-stack:not( :has( > .dataforms-layouts-regular__header ) ) {
+	gap: 20px;
+}
+
+.bei-settings-app .components-v-stack:has( > .dataforms-layouts-regular__header ) {
 	gap: 0;
 }
 
+.bei-number-field {
+	max-width: 10rem;
+}
+
+.bei-settings-app .dataforms-layouts-regular__field .components-select-control {
+	max-width: 28rem;
+}
+
 .bei-settings-app .dataforms-layouts-regular__header {
-	margin: 48px 0 0;
+	margin: 48px 0 12px;
 	padding-top: 32px;
 	border-top: 1px solid #dcdcde;
 
@@ -94,16 +110,16 @@
 }
 
 .bei-field-map-group {
-	margin-top: 24px;
+	margin-top: 28px;
 
 	h3 {
-		margin: 0 0 12px;
+		margin: 0 0 16px;
 		font-size: 1em;
 		font-weight: 600;
 	}
 
 	&:first-of-type {
-		margin-top: 8px;
+		margin-top: 12px;
 	}
 }
 
@@ -115,7 +131,7 @@
 .bei-field-map-grid {
 	display: grid;
 	grid-template-columns: repeat( 2, minmax( 0, 1fr ) );
-	gap: 16px;
+	gap: 20px 24px;
 
 	@media ( max-width: 782px ) {
 		grid-template-columns: 1fr;
@@ -196,32 +212,40 @@
 }
 
 .bei-keyword-chips {
+	> .description {
+		margin: 0 0 12px;
+	}
+
 	.bei-chips {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 6px;
-		margin-bottom: 8px;
+		gap: 8px;
+		margin-bottom: 10px;
 	}
 
 	.bei-keyword-chip {
 		display: inline-flex;
 		align-items: center;
-		gap: 4px;
-		padding: 3px 8px;
-		background: #fff;
-		border: 1px solid #c3c4c7;
-		border-radius: 4px;
+		gap: 6px;
+		padding: 4px 10px;
+		background: #f0f0f1;
+		border: 1px solid #dcdcde;
+		border-radius: 12px;
 		font-size: 13px;
-		box-shadow: 0 1px 0 rgba( 0, 0, 0, 0.04 );
+		line-height: 1.35;
 	}
 
 	.bei-remove-chip {
 		border: 0;
 		background: transparent;
 		cursor: pointer;
-		padding: 0 2px;
+		padding: 0 4px;
 		line-height: 1;
 		color: #50575e;
+	}
+
+	> .components-base-control {
+		max-width: 24rem;
 	}
 }
 
@@ -268,7 +292,11 @@
 	}
 
 	.bei-keyword-chips .bei-chips {
-		margin-bottom: 4px;
+		margin-bottom: 8px;
+	}
+
+	.bei-keyword-chips > .components-base-control {
+		max-width: none;
 	}
 }
 
@@ -290,8 +318,8 @@
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
-	gap: 8px;
-	margin-top: 12px;
+	gap: 12px;
+	margin-top: 16px;
 }
 
 .bei-taxonomy-group-hint {
@@ -301,12 +329,24 @@
 .bei-taxonomy-actions-end {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 8px;
+	gap: 12px;
 	margin-left: auto;
 }
 
 .bei-taxonomy-advanced {
-	margin-top: 16px;
+	margin-top: 20px;
+
+	> .components-base-control {
+		max-width: 28rem;
+	}
+}
+
+.bei-settings-modules .components-toggle-control {
+	padding: 4px 0;
+}
+
+.bei-settings-modules .components-text-control {
+	max-width: 32rem;
 }
 
 .bei-extra-meta-rows {

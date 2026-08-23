@@ -68,14 +68,16 @@ export function IntegerFieldEdit( { data, field, onChange, hideLabelFromVision }
 	);
 
 	return (
-		<NumberControl
-			label={ hideLabelFromVision ? undefined : label }
-			help={ description }
-			value={ value }
-			onChange={ onChangeControl }
-			__next40pxDefaultSize
-			__nextHasNoMarginBottom
-		/>
+		<div className="bei-number-field">
+			<NumberControl
+				label={ hideLabelFromVision ? undefined : label }
+				help={ description }
+				value={ value }
+				onChange={ onChangeControl }
+				__next40pxDefaultSize
+				__nextHasNoMarginBottom
+			/>
+		</div>
 	);
 }
 
