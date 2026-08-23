@@ -161,6 +161,25 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /* ===============================
+     OPTIONAL MODULE TOGGLES
+  ================================= */
+
+  function syncModulePanels() {
+    document.querySelectorAll(".bei-module-toggle").forEach(function (toggle) {
+      const key = toggle.getAttribute("data-bei-module");
+      if (!key) return;
+      document.querySelectorAll('[data-bei-module-panel="' + key + '"]').forEach(function (panel) {
+        panel.hidden = !toggle.checked;
+      });
+    });
+  }
+
+  document.querySelectorAll(".bei-module-toggle").forEach(function (toggle) {
+    toggle.addEventListener("change", syncModulePanels);
+  });
+  syncModulePanels();
+
+  /* ===============================
      FIELD MAP: date mode toggle
   ================================= */
 
