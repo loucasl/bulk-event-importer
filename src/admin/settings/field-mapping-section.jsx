@@ -28,6 +28,7 @@ export function FieldMappingSection( { fieldMap, onChange } ) {
 					label={ __( 'Date field type', 'bulk-event-importer' ) }
 					value={ fieldMap.date_mode }
 					onChange={ ( value ) => setField( 'date_mode', value ) }
+					__next40pxDefaultSize
 					options={ [
 						{
 							label: __(
