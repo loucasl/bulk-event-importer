@@ -3,7 +3,7 @@ import {
 	Button,
 	ProgressBar,
 } from '@wordpress/components';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 function escapeHtml( str ) {
 	return String( str || '' )
@@ -371,68 +371,80 @@ function ImportIssueSummary( { groups } ) {
 	).size;
 	return (
 		<div className="bei-import-issues">
-			<strong className="bei-import-issues-title">
+			<p className="bei-import-issues-title">
 				{ feedCount === 1
-					? __( '1 feed needs attention', 'bulk-event-importer' )
+					? __(
+							'One feed could not be imported',
+							'bulk-event-importer'
+					  )
 					: sprintf(
-							/* translators: %d: number of feeds with errors */
-							__( '%d feeds need attention', 'bulk-event-importer' ),
+							/* translators: %d: number of feeds that did not import */
+							__(
+								'%d feeds could not be imported',
+								'bulk-event-importer'
+							),
 							feedCount
 					  ) }
-			</strong>
+			</p>
 			{ groups.map( ( group ) => {
 				const extra = group.feeds.length - 6;
+				const shown = group.feeds.slice( 0, 6 );
 				return (
 					<div className="bei-import-issue" key={ group.id }>
 						<div className="bei-import-issue-head">
 							{ group.title }
-							<span className="bei-import-issue-count">
-								{ ' ' }
-								({ group.feeds.length })
-							</span>
 						</div>
-						<p className="bei-import-issue-why">{ group.why }</p>
-						<p className="bei-import-issue-next">
-							<strong>
-								{ __( 'Next step:', 'bulk-event-importer' ) }
-							</strong>{ ' ' }
-							{ group.action }
-						</p>
-						<ul className="bei-import-issue-feeds">
-							{ group.feeds.slice( 0, 6 ).map( ( feed ) => (
-								<li key={ `${ feed.source }-${ feed.url }` }>
-									<strong>{ feed.source }</strong>
-									{ feed.url ? (
-										<span className="description">
-											{ ' ' }
-											{ feed.url }
-										</span>
-									) : null }
-									{ feed.detail ? (
-										<div className="description">
-											{ feed.detail }
-										</div>
-									) : null }
-								</li>
-							) ) }
-						</ul>
-						{ extra > 0 && (
-							<p className="description bei-import-issue-more">
-								{ extra === 1
-									? __(
-											'And 1 more in the feed list below.',
-											'bulk-event-importer'
-									  )
-									: sprintf(
-											/* translators: %d: additional feeds not listed */
-											__(
-												'And %d more in the feed list below.',
+						<p className="bei-import-issue-next">{ group.action }</p>
+						<details className="bei-import-issue-feeds">
+							<summary>
+								{ sprintf(
+									/* translators: %d: number of feeds in this group */
+									_n(
+										'%d feed',
+										'%d feeds',
+										group.feeds.length,
+										'bulk-event-importer'
+									),
+									group.feeds.length
+								) }
+							</summary>
+							<ul>
+								{ shown.map( ( feed ) => (
+									<li
+										key={ `${ feed.source }-${ feed.url }` }
+									>
+										<strong>{ feed.source }</strong>
+										{ feed.url ? (
+											<div className="description">
+												{ feed.url }
+											</div>
+										) : null }
+										{ feed.detail ? (
+											<div className="description">
+												{ feed.detail }
+											</div>
+										) : null }
+									</li>
+								) ) }
+							</ul>
+							{ extra > 0 && (
+								<p className="description bei-import-issue-more">
+									{ extra === 1
+										? __(
+												'And 1 more in the feed list below.',
 												'bulk-event-importer'
-											),
-											extra
-									  ) }
-							</p>
-						) }
+										  )
+										: sprintf(
+												/* translators: %d: additional feeds not listed */
+												__(
+													'And %d more in the feed list below.',
+													'bulk-event-importer'
+												),
+												extra
+										  ) }
+								</p>
+							) }
+						</details>
 					</div>
 				);
 			} ) }
