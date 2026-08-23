@@ -17,8 +17,15 @@ add_action( 'admin_enqueue_scripts', function( $hook ) {
         return;
     }
 
-    wp_enqueue_style( 'bulk-event-importer-admin', BEI_PLUGIN_URL . 'assets/admin.css', [], BEI_VERSION );
-    wp_enqueue_script( 'bulk-event-importer-admin', BEI_PLUGIN_URL . 'assets/admin.js', [], BEI_VERSION, true );
+    // Bust browser cache on file change so Push-to-Deploy / manual updates
+    // pick up CSS/JS without requiring a plugin version bump.
+    $css_path = BEI_PLUGIN_DIR . 'assets/admin.css';
+    $js_path  = BEI_PLUGIN_DIR . 'assets/admin.js';
+    $css_ver  = file_exists( $css_path ) ? (string) filemtime( $css_path ) : BEI_VERSION;
+    $js_ver   = file_exists( $js_path ) ? (string) filemtime( $js_path ) : BEI_VERSION;
+
+    wp_enqueue_style( 'bulk-event-importer-admin', BEI_PLUGIN_URL . 'assets/admin.css', [], $css_ver );
+    wp_enqueue_script( 'bulk-event-importer-admin', BEI_PLUGIN_URL . 'assets/admin.js', [], $js_ver, true );
 
     wp_localize_script(
         'bulk-event-importer-admin',

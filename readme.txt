@@ -46,6 +46,8 @@ site-specific to belong in the shared codebase:
   module sections.
 * Moved "Run Import Now" to the top right below the page title, loosened top
   spacing, and removed the shared-code / per-site configuration intro paragraph.
+* Admin CSS/JS now cache-bust by file modification time so layout tweaks show up
+  after deploy without a plugin version bump.
 
 = 2.0.0 =
 * Unified codebase merging two previously-forked, site-specific versions.
