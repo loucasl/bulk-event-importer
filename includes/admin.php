@@ -10,6 +10,29 @@ add_action( 'admin_menu', [ 'Bulk_Event_Importer', 'register_admin_menu' ] );
 add_action( 'admin_init', [ 'Bulk_Event_Importer', 'register_settings' ] );
 
 /**
+ * Reasons the React settings UI cannot load (empty messages = OK to render).
+ *
+ * @return string[]
+ */
+function bei_settings_page_blockers() {
+    $blockers = [];
+
+    if ( ! file_exists( BEI_PLUGIN_DIR . 'build/settings.js' ) ) {
+        $blockers[] = 'Built admin assets are missing (build/settings.js). Reinstall or redeploy the plugin from the develop branch, or run npm install && npm run build in the plugin directory.';
+    }
+
+    global $wp_version;
+    if ( version_compare( $wp_version, '6.9', '<' ) ) {
+        $blockers[] = sprintf(
+            'Bulk Event Importer 2.1.0 requires WordPress 6.9 or newer (this site is running %s). Upgrade WordPress or deploy the main branch (2.0.x) until you can upgrade.',
+            $wp_version
+        );
+    }
+
+    return $blockers;
+}
+
+/**
  * Admin assets for the React settings page.
  */
 add_action( 'admin_enqueue_scripts', function( $hook ) {
@@ -17,13 +40,13 @@ add_action( 'admin_enqueue_scripts', function( $hook ) {
         return;
     }
 
+    if ( bei_settings_page_blockers() ) {
+        return;
+    }
+
     $script_path = BEI_PLUGIN_DIR . 'build/settings.js';
     $style_path  = BEI_PLUGIN_DIR . 'build/style-index.css';
     $asset_path  = BEI_PLUGIN_DIR . 'build/settings.asset.php';
-
-    if ( ! file_exists( $script_path ) ) {
-        return;
-    }
 
     $asset = file_exists( $asset_path )
         ? include $asset_path
