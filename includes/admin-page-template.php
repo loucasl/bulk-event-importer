@@ -31,41 +31,26 @@ function bei_admin_chip_field( $name, $raw_value, $label = '', $description = ''
 ?>
 <div class="wrap bulk-event-importer-settings">
 
-    <h1>Bulk Event Importer Settings</h1>
-    <p class="description">This plugin's code is shared across sites. Everything below (feeds, categories, field mapping, optional modules) is per-site configuration. Use the module toggles to show only the features this site needs.</p>
+    <div class="bei-page-header">
+        <h1>Bulk Event Importer Settings</h1>
+        <div class="bei-import-now">
+            <div class="bei-import-actions">
+                <button type="button" id="run-import-ajax" class="button button-primary">Run Import Now</button>
+                <button type="button" id="cancel-import-ajax" class="button" style="display:none;">Cancel Import</button>
+            </div>
+            <p class="description bei-import-hint">Imports all configured feeds in real time. Progress appears below.</p>
+            <div id="import-progress" class="bei-import-progress" aria-labelledby="import-progress-heading">
+                <h2 id="import-progress-heading" class="screen-reader-text">Import progress</h2>
+                <div class="bei-progress-outer">
+                    <div id="progress-bar" class="bei-progress-bar"></div>
+                </div>
+                <div id="import-status" class="bei-import-status"></div>
+            </div>
+        </div>
+    </div>
 
     <form method="post" action="options.php">
         <?php settings_fields( 'bulk_event_importer' ); ?>
-
-        <!-- Optional modules overview -->
-        <section class="bei-section">
-            <h2>Optional Modules</h2>
-            <p class="description">Enable a module to show its settings below. Disabled modules are left out of import behaviour.</p>
-            <div class="bei-modules-grid">
-                <article class="bei-module-card">
-                    <div class="bei-module-card-body">
-                        <h3 class="bei-module-card-title">Allowlist Filter</h3>
-                        <p class="bei-module-card-desc">Only import events that match at least one allowed keyword (title, location, or link).</p>
-                    </div>
-                    <label class="bei-module-switch">
-                        <input type="checkbox" class="bei-module-toggle" name="<?php echo esc_attr( $OPT ); ?>[allowlist_enabled]" value="1" data-bei-module="allowlist" <?php checked( ! empty( $options['allowlist_enabled'] ) ); ?>>
-                        <span class="bei-module-switch-ui" aria-hidden="true"></span>
-                        <span class="screen-reader-text">Enable Allowlist Filter</span>
-                    </label>
-                </article>
-                <article class="bei-module-card">
-                    <div class="bei-module-card-body">
-                        <h3 class="bei-module-card-title">Geocoding</h3>
-                        <p class="bei-module-card-desc">Look up coordinates for event locations. Requires <code>LL_GOOGLE_GEOCODE_KEY</code> in wp-config.php.</p>
-                    </div>
-                    <label class="bei-module-switch">
-                        <input type="checkbox" class="bei-module-toggle" name="<?php echo esc_attr( $OPT ); ?>[geocoding_enabled]" value="1" data-bei-module="geocoding" <?php checked( ! empty( $options['geocoding_enabled'] ) ); ?>>
-                        <span class="bei-module-switch-ui" aria-hidden="true"></span>
-                        <span class="screen-reader-text">Enable Geocoding</span>
-                    </label>
-                </article>
-            </div>
-        </section>
 
         <!-- Feed URLs -->
         <section class="bei-section">
@@ -311,22 +296,37 @@ function bei_admin_chip_field( $name, $raw_value, $label = '', $description = ''
             </table>
         </section>
 
+        <!-- Optional modules overview -->
+        <section class="bei-section">
+            <h2>Optional Modules</h2>
+            <p class="description">Enable a module to show its settings section above. Disabled modules are left out of import behaviour.</p>
+            <div class="bei-modules-grid">
+                <article class="bei-module-card">
+                    <div class="bei-module-card-body">
+                        <h3 class="bei-module-card-title">Allowlist Filter</h3>
+                        <p class="bei-module-card-desc">Only import events that match at least one allowed keyword (title, location, or link).</p>
+                    </div>
+                    <label class="bei-module-switch">
+                        <input type="checkbox" class="bei-module-toggle" name="<?php echo esc_attr( $OPT ); ?>[allowlist_enabled]" value="1" data-bei-module="allowlist" <?php checked( ! empty( $options['allowlist_enabled'] ) ); ?>>
+                        <span class="bei-module-switch-ui" aria-hidden="true"></span>
+                        <span class="screen-reader-text">Enable Allowlist Filter</span>
+                    </label>
+                </article>
+                <article class="bei-module-card">
+                    <div class="bei-module-card-body">
+                        <h3 class="bei-module-card-title">Geocoding</h3>
+                        <p class="bei-module-card-desc">Look up coordinates for event locations. Requires <code>LL_GOOGLE_GEOCODE_KEY</code> in wp-config.php.</p>
+                    </div>
+                    <label class="bei-module-switch">
+                        <input type="checkbox" class="bei-module-toggle" name="<?php echo esc_attr( $OPT ); ?>[geocoding_enabled]" value="1" data-bei-module="geocoding" <?php checked( ! empty( $options['geocoding_enabled'] ) ); ?>>
+                        <span class="bei-module-switch-ui" aria-hidden="true"></span>
+                        <span class="screen-reader-text">Enable Geocoding</span>
+                    </label>
+                </article>
+            </div>
+        </section>
+
         <?php submit_button( 'Save Settings' ); ?>
     </form>
-
-    <hr class="bei-divider">
-
-    <h2 id="import-progress-heading">Run Import Now</h2>
-    <p>This imports all configured feeds in real time. Progress and per-feed status appear below.</p>
-
-    <button id="run-import-ajax" class="button button-primary">Run Import Now</button>
-    <button id="cancel-import-ajax" class="button" style="display:none;margin-left:8px;">Cancel Import</button>
-
-    <div id="import-progress" class="bei-import-progress">
-        <div class="bei-progress-outer">
-            <div id="progress-bar" class="bei-progress-bar"></div>
-        </div>
-        <div id="import-status" class="bei-import-status"></div>
-    </div>
 
 </div>
