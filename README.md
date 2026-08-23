@@ -56,7 +56,7 @@ Two hooks are available for site-specific behavior that does not belong in the s
 ### 2.0.1
 
 - Importer Settings: optional modules (Allowlist Filter, Geocoding) appear in a card grid with enable toggles that show or hide each module's settings section; the group sits below Static meta, with the grid directly above those module sections
-- Moved "Run Import Now" to the top right below the page title, loosened top spacing, and removed the shared-code / per-site configuration intro paragraph
+- Moved "Run Import Now" onto the same row as the page title (right-aligned), with progress shown full-width underneath when an import is running, and removed the shared-code / per-site configuration intro paragraph
 - Admin CSS/JS now cache-bust by file modification time so layout tweaks show up after deploy without a plugin version bump
 
 ### 2.0.0
