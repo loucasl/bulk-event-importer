@@ -201,3 +201,49 @@ using either:
 
 Bump `Version:` in the plugin header (and add a changelog entry to
 `readme.txt`) on every release; that's what triggers the update prompt.
+
+### WP Pusher checklist (this repository)
+
+Verified facts for `loucasl/bulk-event-importer`:
+
+| Field | Expected value |
+| --- | --- |
+| Repository | `loucasl/bulk-event-importer` (public — leave “private repo” **unchecked**) |
+| Branch | `develop` for staging; `main` (or a release tag) for production once ready |
+| Subdirectory | **empty** — plugin files live at the repo root (`bulk-event-importer.php`) |
+| Package / folder | Must resolve to `bulk-event-importer` (not blank) |
+
+On WP Pusher → Edit plugin, confirm those values, then:
+
+1. Reconnect / re-authorize GitHub if the connection looks stale.
+2. Enable logging under WP Pusher → Log while testing.
+3. Click **Update plugin**. Success here must work before Push-to-Deploy can work.
+4. If Update fails with **“An error occurred: Invalid data provided.”**, that string is WordPress core `WP_Upgrader` `bad_request` — usually an empty package/source. Typical causes: empty package slug in WP Pusher, wrong/empty subdirectory after the repo flatten, private-checkbox mismatch on a public repo, or a broken GitHub token. Fix the Edit-plugin fields (or remove + re-install the package from GitHub) before chasing webhooks.
+5. Copy the Push-to-Deploy URL and confirm it includes a non-empty `&package=…` (e.g. `&package=bulk-event-importer`). An empty `&package=` means the package was never registered correctly.
+
+### Push-to-Deploy and SiteGround Anti-Bot AI
+
+Staging (`staging2.thegenerall.store`) sits behind SiteGround’s **Anti-Bot AI / SG-Captcha**. Automated clients (GitHub webhooks, `curl`, scanners) often never reach WordPress. Signature of the block:
+
+* Response header: `sg-captcha: challenge`
+* Status: often `202` (sometimes surfaces as a browser “400 / This page isn’t working”)
+* Body: HTML meta-refresh to `/.well-known/sgcaptcha/…`
+* Generic `server: nginx` only — no WordPress cookies or HTML
+
+Security Optimizer XSS toggles and the Site Tools IP block list do **not** control this layer. There is no self-serve allowlist by URL pattern. Open a SiteGround ticket and ask them to either:
+
+* whitelist GitHub’s webhook CIDRs for the staging hostname in Anti-Bot AI / SG-Captcha, **or**
+* disable `protect_captcha_auto` for that hostname while testing deploy.
+
+Current GitHub Hooks ranges (confirm via `https://api.github.com/meta` → `hooks` before filing):
+
+```
+192.30.252.0/22
+185.199.108.0/22
+140.82.112.0/20
+143.55.64.0/20
+2a0a:a440::/29
+2606:50c0::/32
+```
+
+After SiteGround exempts the hooks, GitHub → Settings → Webhooks → Recent Deliveries should show `2xx` with a WordPress/WP Pusher body, not an empty nginx-only 400/202. Then a merge to `develop` will auto-update staging.
