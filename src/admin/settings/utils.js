@@ -66,3 +66,16 @@ export function getLocalPaginationInfo( itemCount, perPage = 10 ) {
 		totalPages: Math.max( 1, Math.ceil( totalItems / pageSize ) ),
 	};
 }
+
+/**
+ * Count configured feed lines (ignores blanks and # comments).
+ *
+ * @param {string} raw
+ * @return {number}
+ */
+export function countFeedUrls( raw ) {
+	return String( raw || '' )
+		.split( '\n' )
+		.map( ( line ) => line.trim() )
+		.filter( ( line ) => line && ! line.startsWith( '#' ) ).length;
+}

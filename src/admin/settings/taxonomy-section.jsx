@@ -1,237 +1,169 @@
-import { useMemo, useState } from '@wordpress/element';
 import {
 	Button,
 	Flex,
 	FlexBlock,
-	FlexItem,
-	FormTokenField,
-	PanelBody,
-	PanelRow,
 	TextControl,
 	__experimentalVStack as VStack,
 } from '@wordpress/components';
-import { DataViews } from '@wordpress/dataviews/wp';
 import { __ } from '@wordpress/i18n';
-import { genGroupKey, getLocalPaginationInfo } from './utils';
+import { KeywordChips } from './keyword-chips';
+import { genGroupKey } from './utils';
 
-function KeywordTokens( { value, onChange } ) {
+function TaxonomyBlock( { taxonomy, onChange, onRemove } ) {
+	const groups = taxonomy.groups || [];
+
 	return (
-		<FormTokenField
-			value={ value || [] }
-			onChange={ ( tokens ) => onChange( tokens ) }
-			__experimentalExpandOnFocus
-			__experimentalShowHowTo={ false }
-			label={ __( 'Keywords', 'bulk-event-importer' ) }
-			hideLabelFromVision
-		/>
-	);
-}
+		<div className="bei-taxonomy-block">
+			<h3 className="bei-taxonomy-block-title">
+				{ taxonomy.label || __( 'New taxonomy', 'bulk-event-importer' ) }
+			</h3>
 
-function TaxonomyBlock( { taxonomy, taxIndex, onChange, onRemove, defaultOpen } ) {
-	const [ isOpen, setIsOpen ] = useState( defaultOpen );
-
-	const fields = useMemo(
-		() => [
-			{
-				id: 'term',
-				label: __( 'Term', 'bulk-event-importer' ),
-				type: 'text',
-				enableSorting: false,
-				enableHiding: false,
-				render: ( { item } ) => (
+			<Flex gap={ 4 } wrap className="bei-taxonomy-meta">
+				<FlexBlock>
 					<TextControl
-						value={ item.term }
-						onChange={ ( term ) => {
-							const groups = taxonomy.groups.map( ( g, i ) =>
-								i === item._index ? { ...g, term } : g
-							);
-							onChange( { ...taxonomy, groups } );
-						} }
-						__nextHasNoMarginBottom
+						label={ __( 'Taxonomy slug', 'bulk-event-importer' ) }
+						value={ taxonomy.slug }
+						onChange={ ( slug ) => onChange( { ...taxonomy, slug } ) }
+						__next40pxDefaultSize
 					/>
-				),
-			},
-			{
-				id: 'keywords',
-				label: __( 'Keywords', 'bulk-event-importer' ),
-				type: 'text',
-				enableSorting: false,
-				enableHiding: false,
-				render: ( { item } ) => (
-					<KeywordTokens
-						value={ item.keywords || [] }
-						onChange={ ( keywords ) => {
-							const groups = taxonomy.groups.map( ( g, i ) =>
-								i === item._index ? { ...g, keywords } : g
-							);
-							onChange( { ...taxonomy, groups } );
-						} }
+				</FlexBlock>
+				<FlexBlock>
+					<TextControl
+						label={ __( 'Display label', 'bulk-event-importer' ) }
+						value={ taxonomy.label }
+						onChange={ ( label ) => onChange( { ...taxonomy, label } ) }
+						__next40pxDefaultSize
 					/>
-				),
-			},
-		],
-		[ taxonomy, onChange ]
-	);
-
-	const view = useMemo(
-		() => ( {
-			type: 'table',
-			titleField: 'term',
-			fields: [ 'term', 'keywords' ],
-			perPage: 100,
-			page: 1,
-			sort: { field: 'term', direction: 'asc' },
-			search: '',
-			filters: [],
-			layout: { density: 'comfortable' },
-		} ),
-		[]
-	);
-
-	const rows = ( taxonomy.groups || [] ).map( ( group, index ) => ( {
-		...group,
-		id: group.key || `row-${ index }`,
-		_index: index,
-	} ) );
-
-	const defaultLayouts = useMemo(
-		() => ( {
-			table: {},
-		} ),
-		[]
-	);
-
-	return (
-		<PanelBody
-			title={
-				taxonomy.label ||
-				__( 'New taxonomy', 'bulk-event-importer' )
-			}
-			initialOpen={ isOpen }
-			onToggle={ () => setIsOpen( ( open ) => ! open ) }
-		>
-			<VStack spacing={ 4 }>
-				<Flex gap={ 4 } wrap>
-					<FlexBlock>
-						<TextControl
-							label={ __( 'Taxonomy slug', 'bulk-event-importer' ) }
-							value={ taxonomy.slug }
-							onChange={ ( slug ) =>
-								onChange( { ...taxonomy, slug } )
-							}
-						/>
-					</FlexBlock>
-					<FlexBlock>
-						<TextControl
-							label={ __( 'Display label', 'bulk-event-importer' ) }
-							value={ taxonomy.label }
-							onChange={ ( label ) =>
-								onChange( { ...taxonomy, label } )
-							}
-						/>
-					</FlexBlock>
-					<FlexBlock>
-						<TextControl
-							label={ __(
-								'Default term (optional)',
-								'bulk-event-importer'
-							) }
-							value={ taxonomy.default_term }
-							onChange={ ( default_term ) =>
-								onChange( { ...taxonomy, default_term } )
-							}
-							help={ __(
-								'Applied when nothing matches.',
-								'bulk-event-importer'
-							) }
-						/>
-					</FlexBlock>
-				</Flex>
-
-				<DataViews
-					data={ rows }
-					fields={ fields }
-					view={ view }
-					onChangeView={ () => {} }
-					defaultLayouts={ defaultLayouts }
-					getItemId={ ( item ) => item.id }
-					paginationInfo={ getLocalPaginationInfo(
-						rows.length,
-						view.perPage
-					) }
-					actions={ [
-						{
-							id: 'remove',
-							label: __( 'Remove', 'bulk-event-importer' ),
-							isPrimary: true,
-							callback: ( items ) => {
-								const removeIds = new Set(
-									items.map( ( item ) => item.id )
-								);
-								onChange( {
-									...taxonomy,
-									groups: taxonomy.groups.filter(
-										( g ) => ! removeIds.has( g.key )
-									),
-								} );
-							},
-						},
-					] }
-				/>
-
-				<Flex>
-					<Button
-						variant="secondary"
-						onClick={ () =>
-							onChange( {
-								...taxonomy,
-								groups: [
-									...( taxonomy.groups || [] ),
-									{
-										key: genGroupKey(),
-										term: '',
-										keywords: [],
-									},
-								],
-							} )
+				</FlexBlock>
+				<FlexBlock>
+					<TextControl
+						label={ __(
+							'Default term (optional)',
+							'bulk-event-importer'
+						) }
+						value={ taxonomy.default_term }
+						onChange={ ( default_term ) =>
+							onChange( { ...taxonomy, default_term } )
 						}
-					>
-						{ __( 'Add category', 'bulk-event-importer' ) }
-					</Button>
-					<FlexItem>
-						<Button
-							variant="link"
-							isDestructive
-							onClick={ onRemove }
-						>
-							{ __( 'Remove taxonomy', 'bulk-event-importer' ) }
-						</Button>
-					</FlexItem>
-				</Flex>
-			</VStack>
-		</PanelBody>
+						help={ __(
+							'Applied when nothing matches.',
+							'bulk-event-importer'
+						) }
+						__next40pxDefaultSize
+					/>
+				</FlexBlock>
+			</Flex>
+
+			<table className="widefat fixed striped bei-group-table">
+				<thead>
+					<tr>
+						<th style={ { width: '22%' } }>
+							{ __( 'Term name', 'bulk-event-importer' ) }
+						</th>
+						<th>{ __( 'Keywords', 'bulk-event-importer' ) }</th>
+						<th style={ { width: '72px' } } />
+					</tr>
+				</thead>
+				<tbody>
+					{ groups.map( ( group, index ) => (
+						<tr key={ group.key || `row-${ index }` }>
+							<td>
+								<TextControl
+									value={ group.term }
+									onChange={ ( term ) => {
+										const nextGroups = groups.map( ( g, i ) =>
+											i === index ? { ...g, term } : g
+										);
+										onChange( { ...taxonomy, groups: nextGroups } );
+									} }
+									hideLabelFromVision
+									__next40pxDefaultSize
+									__nextHasNoMarginBottom
+								/>
+							</td>
+							<td>
+								<KeywordChips
+									keywords={ group.keywords || [] }
+									onChange={ ( keywords ) => {
+										const nextGroups = groups.map( ( g, i ) =>
+											i === index ? { ...g, keywords } : g
+										);
+										onChange( { ...taxonomy, groups: nextGroups } );
+									} }
+									addLabel={ __( 'Add keyword', 'bulk-event-importer' ) }
+								/>
+							</td>
+							<td className="bei-row-actions">
+								<Button
+									type="button"
+									variant="link"
+									isDestructive
+									onClick={ () =>
+										onChange( {
+											...taxonomy,
+											groups: groups.filter(
+												( _, i ) => i !== index
+											),
+										} )
+									}
+								>
+									{ __( 'Remove', 'bulk-event-importer' ) }
+								</Button>
+							</td>
+						</tr>
+					) ) }
+				</tbody>
+			</table>
+
+			<div className="bei-taxonomy-actions">
+				<Button
+					type="button"
+					variant="secondary"
+					onClick={ () =>
+						onChange( {
+							...taxonomy,
+							groups: [
+								...groups,
+								{
+									key: genGroupKey(),
+									term: '',
+									keywords: [],
+								},
+							],
+						} )
+					}
+				>
+					{ __( 'Add category', 'bulk-event-importer' ) }
+				</Button>
+				<Button
+					type="button"
+					variant="link"
+					isDestructive
+					onClick={ onRemove }
+				>
+					{ __( 'Remove taxonomy', 'bulk-event-importer' ) }
+				</Button>
+			</div>
+		</div>
 	);
 }
 
 export function TaxonomySection( { taxonomies, onChange } ) {
 	return (
-		<div className="bei-settings-taxonomies">
-			<PanelBody
-				title={ __( 'Categories & Taxonomies', 'bulk-event-importer' ) }
-				initialOpen
-			>
-				<p className="description">
-					{ __(
-						'Define the taxonomies this site uses and the keyword groups that auto-assign each term. Structure is entirely per-site; nothing here is hardcoded in the plugin.',
-						'bulk-event-importer'
-					) }
-				</p>
+		<section className="bei-settings-section bei-settings-taxonomies">
+			<h2>{ __( 'Categories & Taxonomies', 'bulk-event-importer' ) }</h2>
+			<p className="description">
+				{ __(
+					'Define the taxonomies this site uses and the keyword groups that auto-assign each term. Structure is entirely per-site; nothing here is hardcoded in the plugin.',
+					'bulk-event-importer'
+				) }
+			</p>
+
+			<VStack spacing={ 6 }>
 				{ ( taxonomies || [] ).map( ( tax, index ) => (
 					<TaxonomyBlock
 						key={ `tax-${ index }-${ tax.slug || 'new' }` }
 						taxonomy={ tax }
-						taxIndex={ index }
-						defaultOpen={ index === 0 }
 						onChange={ ( updated ) => {
 							const next = [ ...taxonomies ];
 							next[ index ] = updated;
@@ -244,25 +176,25 @@ export function TaxonomySection( { taxonomies, onChange } ) {
 						} }
 					/>
 				) ) }
-				<PanelRow>
-					<Button
-						variant="secondary"
-						onClick={ () =>
-							onChange( [
-								...( taxonomies || [] ),
-								{
-									slug: '',
-									label: '',
-									default_term: '',
-									groups: [],
-								},
-							] )
-						}
-					>
-						{ __( 'Add taxonomy', 'bulk-event-importer' ) }
-					</Button>
-				</PanelRow>
-			</PanelBody>
-		</div>
+
+				<Button
+					type="button"
+					variant="secondary"
+					onClick={ () =>
+						onChange( [
+							...( taxonomies || [] ),
+							{
+								slug: '',
+								label: '',
+								default_term: '',
+								groups: [],
+							},
+						] )
+					}
+				>
+					{ __( 'Add taxonomy', 'bulk-event-importer' ) }
+				</Button>
+			</VStack>
+		</section>
 	);
 }

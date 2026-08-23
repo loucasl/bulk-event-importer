@@ -1,14 +1,10 @@
-import { useMemo } from '@wordpress/element';
 import {
 	Button,
-	PanelBody,
 	SelectControl,
 	TextControl,
 	__experimentalVStack as VStack,
 } from '@wordpress/components';
-import { DataViews } from '@wordpress/dataviews/wp';
 import { __ } from '@wordpress/i18n';
-import { getLocalPaginationInfo } from './utils';
 
 export function FieldMappingSection( { fieldMap, onChange } ) {
 	const isSplit = fieldMap.date_mode === 'split';
@@ -19,10 +15,8 @@ export function FieldMappingSection( { fieldMap, onChange } ) {
 	};
 
 	return (
-		<PanelBody
-			title={ __( 'JetEngine Field Mapping', 'bulk-event-importer' ) }
-			initialOpen
-		>
+		<section className="bei-settings-section">
+			<h2>{ __( 'JetEngine Field Mapping', 'bulk-event-importer' ) }</h2>
 			<p className="description">
 				{ __(
 					'Map internal event data to this site\'s actual JetEngine meta keys. Leave a field blank to skip writing it. Check a field\'s meta key under Custom Fields in JetEngine\'s field group editor.',
@@ -62,6 +56,7 @@ export function FieldMappingSection( { fieldMap, onChange } ) {
 							onChange={ ( v ) =>
 								setField( 'start_date_meta', v )
 							}
+							__next40pxDefaultSize
 						/>
 						<TextControl
 							label={ __(
@@ -70,6 +65,7 @@ export function FieldMappingSection( { fieldMap, onChange } ) {
 							) }
 							value={ fieldMap.end_date_meta }
 							onChange={ ( v ) => setField( 'end_date_meta', v ) }
+							__next40pxDefaultSize
 						/>
 					</>
 				) }
@@ -81,22 +77,26 @@ export function FieldMappingSection( { fieldMap, onChange } ) {
 						) }
 						value={ fieldMap.je_date_meta }
 						onChange={ ( v ) => setField( 'je_date_meta', v ) }
+						__next40pxDefaultSize
 					/>
 				) }
 				<TextControl
 					label={ __( 'Start time meta key', 'bulk-event-importer' ) }
 					value={ fieldMap.start_time_meta }
 					onChange={ ( v ) => setField( 'start_time_meta', v ) }
+					__next40pxDefaultSize
 				/>
 				<TextControl
 					label={ __( 'End time meta key', 'bulk-event-importer' ) }
 					value={ fieldMap.end_time_meta }
 					onChange={ ( v ) => setField( 'end_time_meta', v ) }
+					__next40pxDefaultSize
 				/>
 				<TextControl
 					label={ __( 'Location meta key', 'bulk-event-importer' ) }
 					value={ fieldMap.location_meta }
 					onChange={ ( v ) => setField( 'location_meta', v ) }
+					__next40pxDefaultSize
 				/>
 				<TextControl
 					label={ __(
@@ -107,6 +107,7 @@ export function FieldMappingSection( { fieldMap, onChange } ) {
 					onChange={ ( v ) =>
 						setField( 'description_long_meta', v )
 					}
+					__next40pxDefaultSize
 				/>
 				<TextControl
 					label={ __(
@@ -117,6 +118,7 @@ export function FieldMappingSection( { fieldMap, onChange } ) {
 					onChange={ ( v ) =>
 						setField( 'description_short_meta', v )
 					}
+					__next40pxDefaultSize
 				/>
 				<TextControl
 					label={ __(
@@ -125,136 +127,91 @@ export function FieldMappingSection( { fieldMap, onChange } ) {
 					) }
 					value={ fieldMap.external_url_meta }
 					onChange={ ( v ) => setField( 'external_url_meta', v ) }
+					__next40pxDefaultSize
 				/>
 				<TextControl
 					label={ __( 'Source meta key', 'bulk-event-importer' ) }
 					value={ fieldMap.source_meta }
 					onChange={ ( v ) => setField( 'source_meta', v ) }
+					__next40pxDefaultSize
 				/>
 			</VStack>
-		</PanelBody>
+		</section>
 	);
 }
 
 export function StaticMetaSection( { extraStaticMeta, onChange } ) {
-	const rows = ( extraStaticMeta || [] ).map( ( row, index ) => ( {
-		...row,
-		id: `extra-${ index }`,
-		_index: index,
-	} ) );
-
-	const fields = useMemo(
-		() => [
-			{
-				id: 'key',
-				label: __( 'Key', 'bulk-event-importer' ),
-				type: 'text',
-				enableSorting: false,
-				enableHiding: false,
-				render: ( { item } ) => (
-					<TextControl
-						value={ item.key }
-						onChange={ ( key ) => {
-							const next = [ ...( extraStaticMeta || [] ) ];
-							next[ item._index ] = {
-								...next[ item._index ],
-								key,
-							};
-							onChange( next );
-						} }
-						__nextHasNoMarginBottom
-					/>
-				),
-			},
-			{
-				id: 'value',
-				label: __( 'Value', 'bulk-event-importer' ),
-				type: 'text',
-				enableSorting: false,
-				enableHiding: false,
-				render: ( { item } ) => (
-					<TextControl
-						value={ item.value }
-						onChange={ ( value ) => {
-							const next = [ ...( extraStaticMeta || [] ) ];
-							next[ item._index ] = {
-								...next[ item._index ],
-								value,
-							};
-							onChange( next );
-						} }
-						__nextHasNoMarginBottom
-					/>
-				),
-			},
-		],
-		[ extraStaticMeta, onChange ]
-	);
-
-	const view = useMemo(
-		() => ( {
-			type: 'table',
-			titleField: 'key',
-			fields: [ 'key', 'value' ],
-			perPage: 100,
-			page: 1,
-			sort: { field: 'key', direction: 'asc' },
-			search: '',
-			filters: [],
-			layout: { density: 'comfortable' },
-		} ),
-		[]
-	);
+	const rows = extraStaticMeta || [];
 
 	return (
-		<PanelBody
-			title={ __(
-				'Static meta (optional, written on every create/update)',
-				'bulk-event-importer'
-			) }
-			initialOpen
-		>
-			<DataViews
-				data={ rows }
-				fields={ fields }
-				view={ view }
-				onChangeView={ () => {} }
-				defaultLayouts={ { table: {} } }
-				getItemId={ ( item ) => item.id }
-				paginationInfo={ getLocalPaginationInfo(
-					rows.length,
-					view.perPage
+		<section className="bei-settings-section">
+			<h2>
+				{ __(
+					'Static meta (optional, written on every create/update)',
+					'bulk-event-importer'
 				) }
-				actions={ [
-					{
-						id: 'remove',
-						label: __( 'Remove', 'bulk-event-importer' ),
-						isPrimary: true,
-						callback: ( items ) => {
-							const removeIndexes = new Set(
-								items.map( ( item ) => item._index )
-							);
-							onChange(
-								( extraStaticMeta || [] ).filter(
-									( _, i ) => ! removeIndexes.has( i )
+			</h2>
+			<div className="bei-extra-meta-rows">
+				{ rows.map( ( row, index ) => (
+					<div className="bei-extra-row" key={ `extra-${ index }` }>
+						<TextControl
+							value={ row.key }
+							onChange={ ( key ) => {
+								const next = [ ...rows ];
+								next[ index ] = { ...next[ index ], key };
+								onChange( next );
+							} }
+							placeholder={ __(
+								'Meta key',
+								'bulk-event-importer'
+							) }
+							hideLabelFromVision
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+						/>
+						<TextControl
+							value={ row.value }
+							onChange={ ( value ) => {
+								const next = [ ...rows ];
+								next[ index ] = { ...next[ index ], value };
+								onChange( next );
+							} }
+							placeholder={ __(
+								'Value',
+								'bulk-event-importer'
+							) }
+							hideLabelFromVision
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+						/>
+						<Button
+							type="button"
+							variant="link"
+							isDestructive
+							onClick={ () =>
+								onChange(
+									rows.filter( ( _, i ) => i !== index )
 								)
-							);
-						},
-					},
-				] }
-			/>
+							}
+							aria-label={ __(
+								'Remove static meta field',
+								'bulk-event-importer'
+							) }
+						>
+							&times;
+						</Button>
+					</div>
+				) ) }
+			</div>
 			<Button
+				type="button"
 				variant="secondary"
 				onClick={ () =>
-					onChange( [
-						...( extraStaticMeta || [] ),
-						{ key: '', value: '' },
-					] )
+					onChange( [ ...rows, { key: '', value: '' } ] )
 				}
-				style={ { marginTop: '12px' } }
 			>
 				{ __( 'Add static meta field', 'bulk-event-importer' ) }
 			</Button>
-		</PanelBody>
+		</section>
 	);
 }

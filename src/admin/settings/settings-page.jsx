@@ -12,14 +12,30 @@ import {
 	StaticMetaSection,
 } from './field-mapping-section';
 import {
+	getCoreSettingsFields,
 	getFormData,
-	getSettingsFields,
+	getOptionalModuleFields,
+	getOptionalModulesFormLayout,
 	getSettingsFormLayout,
 	mergeFormData,
 } from './fields';
 import { ImportProgress } from './import-progress';
 import { TaxonomySection } from './taxonomy-section';
 import { useSettings } from './use-settings';
+import { countFeedUrls } from './utils';
+
+function SaveButton( { isDirty, isSaving, onSave } ) {
+	return (
+		<Button
+			variant="primary"
+			onClick={ onSave }
+			disabled={ ! isDirty || isSaving }
+			isBusy={ isSaving }
+		>
+			{ __( 'Save Settings', 'bulk-event-importer' ) }
+		</Button>
+	);
+}
 
 export function SettingsPage( { nonce } ) {
 	const {
@@ -31,16 +47,28 @@ export function SettingsPage( { nonce } ) {
 		updateSettings,
 		updateFieldMap,
 		save,
-		discard,
 		reload,
 	} = useSettings();
 
-	const fields = useMemo( () => getSettingsFields(), [] );
-	const form = useMemo( () => getSettingsFormLayout(), [] );
+	const coreFields = useMemo( () => getCoreSettingsFields(), [] );
+	const moduleFields = useMemo( () => getOptionalModuleFields(), [] );
+	const feedUrlCount = useMemo(
+		() => countFeedUrls( settings?.feed_urls ),
+		[ settings?.feed_urls ]
+	);
+	const coreForm = useMemo(
+		() => getSettingsFormLayout( feedUrlCount ),
+		[ feedUrlCount ]
+	);
+	const modulesForm = useMemo( () => getOptionalModulesFormLayout(), [] );
 	const formData = useMemo(
 		() => getFormData( settings ),
 		[ settings ]
 	);
+
+	const handleFormChange = ( edits ) => {
+		updateSettings( ( prev ) => mergeFormData( prev, edits ) );
+	};
 
 	if ( isLoading ) {
 		return (
@@ -72,7 +100,14 @@ export function SettingsPage( { nonce } ) {
 		<div className="bei-settings-app">
 			<HStack className="bei-settings-title-row" alignment="center">
 				<h1>{ __( 'Bulk Event Importer Settings', 'bulk-event-importer' ) }</h1>
-				<ImportProgress nonce={ nonce } />
+				<HStack className="bei-settings-header-actions" spacing={ 2 }>
+					<SaveButton
+						isDirty={ isDirty }
+						isSaving={ isSaving }
+						onSave={ save }
+					/>
+					<ImportProgress nonce={ nonce } />
+				</HStack>
 			</HStack>
 
 			{ error && (
@@ -83,13 +118,9 @@ export function SettingsPage( { nonce } ) {
 
 			<DataForm
 				data={ formData }
-				fields={ fields }
-				form={ form }
-				onChange={ ( edits ) => {
-					updateSettings( ( prev ) =>
-						mergeFormData( prev, edits )
-					);
-				} }
+				fields={ coreFields }
+				form={ coreForm }
+				onChange={ handleFormChange }
 			/>
 
 			<TaxonomySection
@@ -109,29 +140,22 @@ export function SettingsPage( { nonce } ) {
 				}
 			/>
 
-			<div className="bei-settings-savebar">
-				<span className="bei-settings-savebar-state">
-					{ isDirty
-						? __( 'Unsaved changes', 'bulk-event-importer' )
-						: __( 'All changes saved', 'bulk-event-importer' ) }
-				</span>
-				<HStack spacing={ 2 }>
-					<Button
-						variant="secondary"
-						onClick={ discard }
-						disabled={ ! isDirty || isSaving }
-					>
-						{ __( 'Discard changes', 'bulk-event-importer' ) }
-					</Button>
-					<Button
-						variant="primary"
-						onClick={ save }
-						disabled={ ! isDirty || isSaving }
-						isBusy={ isSaving }
-					>
-						{ __( 'Save Settings', 'bulk-event-importer' ) }
-					</Button>
-				</HStack>
+			<section className="bei-settings-section bei-settings-modules">
+				<h2>{ __( 'Optional Modules', 'bulk-event-importer' ) }</h2>
+				<DataForm
+					data={ formData }
+					fields={ moduleFields }
+					form={ modulesForm }
+					onChange={ handleFormChange }
+				/>
+			</section>
+
+			<div className="bei-settings-save-footer">
+				<SaveButton
+					isDirty={ isDirty }
+					isSaving={ isSaving }
+					onSave={ save }
+				/>
 			</div>
 		</div>
 	);
