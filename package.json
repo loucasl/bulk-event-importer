@@ -1,0 +1,19 @@
+{
+  "name": "bulk-event-importer",
+  "version": "2.2.0",
+  "private": true,
+  "scripts": {
+    "build": "wp-scripts build src/admin/settings/index.js --output-path=build --output-filename=settings.js",
+    "start": "wp-scripts start src/admin/settings/index.js --output-path=build --output-filename=settings.js"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^30.16.0"
+  },
+  "dependencies": {
+    "@wordpress/api-fetch": "^7.16.0",
+    "@wordpress/components": "^29.3.0",
+    "@wordpress/dataviews": "^4.10.0",
+    "@wordpress/element": "^6.16.0",
+    "@wordpress/i18n": "^5.16.0"
+  }
+}

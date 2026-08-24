@@ -3,7 +3,9 @@
  * Plugin Name: Bulk Event Importer
  * Description: Fetches external calendar feeds (RSS/ICS), normalizes them, and creates/updates Event posts. Taxonomies, keyword rules, JetEngine field mapping, geocoding, and the allowlist filter are all configured per site from Settings, so one codebase runs on every site.
  * Author: Red Dragon Creative
- * Version: 2.0.0
+ * Version: 2.2.0
+ * Requires at least: 6.9
+ * Requires PHP: 7.4
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -39,7 +41,7 @@ if ( ! function_exists( 'str_ends_with' ) ) {
 define( 'BEI_PLUGIN_FILE', __FILE__ );
 define( 'BEI_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BEI_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'BEI_VERSION', '2.0.0' );
+define( 'BEI_VERSION', '2.2.0' );
 
 class Bulk_Event_Importer {
 
@@ -338,6 +340,9 @@ class Bulk_Event_Importer {
 
         // --- Geocoding module ---
         $output['geocoding_enabled'] = ! empty( $input['geocoding_enabled'] ) ? '1' : '';
+        if ( isset( $input['static_meta_enabled'] ) ) {
+            $output['static_meta_enabled'] = ! empty( $input['static_meta_enabled'] ) ? '1' : '';
+        }
         foreach ( [ 'geocoding_address_metas', 'geocoding_lat_meta', 'geocoding_lng_meta', 'geocoding_hash_meta', 'geocoding_country_suffix' ] as $gk ) {
             if ( isset( $input[ $gk ] ) ) {
                 $output[ $gk ] = sanitize_text_field( $input[ $gk ] );
@@ -360,6 +365,7 @@ require_once BEI_PLUGIN_DIR . 'includes/parsers-ics.php';
 require_once BEI_PLUGIN_DIR . 'includes/parsers-rss.php';
 require_once BEI_PLUGIN_DIR . 'includes/images.php';
 require_once BEI_PLUGIN_DIR . 'includes/geocode.php';
+require_once BEI_PLUGIN_DIR . 'includes/rest-settings.php';
 require_once BEI_PLUGIN_DIR . 'includes/admin.php';
 require_once BEI_PLUGIN_DIR . 'includes/ajax.php';
 require_once BEI_PLUGIN_DIR . 'includes/cron.php';
