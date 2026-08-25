@@ -4,7 +4,7 @@ A WordPress plugin that fetches external calendar feeds (RSS/ICS), normalizes th
 
 | | |
 |---|---|
-| **Version** | 2.2.1 |
+| **Version** | 2.2.2 |
 | **Requires WordPress** | 6.9+ |
 | **Tested up to** | 6.7 |
 | **Requires PHP** | 7.4+ |
@@ -65,6 +65,12 @@ Two hooks are available for site-specific behavior that does not belong in the s
 | `bei_after_upsert_event_post` | Action | Fires after every create/update; args: `$post_id`, `$event`, `$status`. Useful for linking to a related custom post type |
 
 ## Changelog
+
+### 2.2.2
+
+- Do not invent a location from the first word of an event title when the feed has no venue (avoids `Fashion Show` → `Fashion`)
+- When location is empty, only take a city from a trailing title parenthesis (e.g. `Together for Nature Tour (Ottawa)` → `Ottawa`)
+- Leading title place names are still appended to a real venue, or combined with a province-only feed location (e.g. `ON` + `Orangeville…`)
 
 ### 2.2.1
 
