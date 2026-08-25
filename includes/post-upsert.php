@@ -35,9 +35,15 @@ function bei_upsert_event_post( $event ) {
         return 'skipped';
     }
 
-    // If location is missing, fall back to the feed/source label so RSS
-    // items without a location field don't get skipped downstream.
+    // Prefer a real venue: feed field first, then Event JSON-LD on the
+    // detail page (common for SimpleView/Tourism RSS), then the feed label
+    // so RSS items without any venue still pass allowlist/geocode paths.
     $incoming_location = bei_sanitize_location( $event['location'] ?? '' );
+    if ( $incoming_location === '' && ! empty( $event['external_url'] ) ) {
+        $incoming_location = bei_sanitize_location(
+            bei_extract_location_from_url( (string) $event['external_url'] )
+        );
+    }
     if ( $incoming_location === '' ) {
         $incoming_location = bei_sanitize_location( $event['source'] ?? '' );
     }

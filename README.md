@@ -4,7 +4,7 @@ A WordPress plugin that fetches external calendar feeds (RSS/ICS), normalizes th
 
 | | |
 |---|---|
-| **Version** | 2.2.0 |
+| **Version** | 2.2.1 |
 | **Requires WordPress** | 6.9+ |
 | **Tested up to** | 6.7 |
 | **Requires PHP** | 7.4+ |
@@ -65,6 +65,12 @@ Two hooks are available for site-specific behavior that does not belong in the s
 | `bei_after_upsert_event_post` | Action | Fires after every create/update; args: `$post_id`, `$event`, `$status`. Useful for linking to a related custom post type |
 
 ## Changelog
+
+### 2.2.1
+
+- RSS imports: read `location` / `venue` item fields when present
+- When RSS has no venue, enrich from schema.org Event JSON-LD on the event detail page (fixes Tourism Nanaimo and similar SimpleView feeds that only publish venue on the HTML page)
+- Re-import updates existing posts when the resolved location changes (and re-geocodes if that module is on)
 
 ### 2.2.0
 
