@@ -41,7 +41,7 @@ if ( ! function_exists( 'str_ends_with' ) ) {
 define( 'BEI_PLUGIN_FILE', __FILE__ );
 define( 'BEI_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BEI_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'BEI_VERSION', '2.2.0' );
+define( 'BEI_VERSION', '2.2.1' );
 
 class Bulk_Event_Importer {
 
