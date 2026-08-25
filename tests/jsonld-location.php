@@ -52,6 +52,12 @@ bei_test_assert( 'not junk venue', ! bei_is_junk_location( 'Dufferin Hi-Land Bru
 bei_test_assert( 'title Mulmur', bei_place_from_event_title( 'Mulmur 175 End-to-End Challenge' ) === 'Mulmur' );
 bei_test_assert( 'title Orangeville', bei_place_from_event_title( 'Orangeville Neighbourhood Block Box' ) === 'Orangeville' );
 bei_test_assert( 'title Music denied', bei_place_from_event_title( 'Music in the Library: Nanaimo' ) === '' );
+bei_test_assert( 'title Fashion denied', bei_place_from_event_title( 'Fashion Show' ) === '' );
+bei_test_assert( 'title Christmas denied', bei_place_from_event_title( 'Christmas Eve Celebration' ) === '' );
+bei_test_assert( 'title Together denied', bei_place_from_event_title( 'Together for Nature Tour' ) === '' );
+bei_test_assert( 'paren Ottawa', bei_parenthetical_place_from_title( 'Together for Nature Tour (Ottawa)' ) === 'Ottawa' );
+bei_test_assert( 'paren from title fn', bei_place_from_event_title( 'Together For Nature Tour (Toronto)' ) === 'Toronto' );
+bei_test_assert( 'no paren Fashion', bei_parenthetical_place_from_title( 'Fashion Show' ) === '' );
 bei_test_assert( 'append Mulmur', bei_append_place_to_location( 'Dufferin Hi-Land Bruce Trail', 'Mulmur' ) === 'Dufferin Hi-Land Bruce Trail, Mulmur' );
 bei_test_assert( 'append Orangeville+ON', bei_append_place_to_location( '', 'Orangeville', 'ON' ) === 'Orangeville, ON' );
 bei_test_assert( 'no King in Kingston', ! bei_location_contains_place( 'Kingston, ON', 'King' ) );

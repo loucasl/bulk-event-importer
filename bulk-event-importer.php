@@ -3,7 +3,7 @@
  * Plugin Name: Bulk Event Importer
  * Description: Fetches external calendar feeds (RSS/ICS), normalizes them, and creates/updates Event posts. Taxonomies, keyword rules, JetEngine field mapping, geocoding, and the allowlist filter are all configured per site from Settings, so one codebase runs on every site.
  * Author: Red Dragon Creative
- * Version: 2.2.1
+ * Version: 2.2.2
  * Requires at least: 6.9
  * Requires PHP: 7.4
  */
@@ -41,7 +41,7 @@ if ( ! function_exists( 'str_ends_with' ) ) {
 define( 'BEI_PLUGIN_FILE', __FILE__ );
 define( 'BEI_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BEI_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'BEI_VERSION', '2.2.1' );
+define( 'BEI_VERSION', '2.2.2' );
 
 class Bulk_Event_Importer {
 

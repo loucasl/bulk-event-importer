@@ -63,14 +63,49 @@ function bei_province_code_from_location( $location ) : string {
     return in_array( $upper, bei_province_codes(), true ) ? $upper : '';
 }
 
-/** Leading capitalized title token, skipping common non-place starters. */
+/** True when a short title fragment looks like a place name (not a year/phrase). */
+function bei_looks_like_place_name( $place ) : bool {
+    $place = trim( (string) $place );
+    if ( $place === '' || strlen( $place ) > 40 || preg_match( '/^\d{4}$/', $place ) ) {
+        return false;
+    }
+    if ( ! preg_match( '/^[\p{L}][\p{L}\p{N}\'’.\-]*(?: [\p{L}][\p{L}\p{N}\'’.\-]*){0,3}$/u', $place ) ) {
+        return false;
+    }
+    $deny = 'the|and|for|free|live|open|virtual|online|annual|music|concert|festival|workshop|market|fair|show|series|join|beyond|special|summer|winter|spring|fall|community|canada|national|together|fashion|christmas|dress|celebration|rehearsal|hangout|tour|nature|eve|party|gala';
+    $first = preg_split( '/\s+/', $place )[0] ?? '';
+    return $first !== '' && ! preg_match( '/^(?:' . $deny . ')$/i', $first );
+}
+
+/**
+ * Place hint from an event title.
+ * Prefer trailing "(City)"; else a leading capitalized token (append-only use).
+ */
 function bei_place_from_event_title( $title ) : string {
     $title = html_entity_decode( trim( wp_strip_all_tags( (string) $title ) ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+    if ( $title === '' ) {
+        return '';
+    }
+    if ( preg_match( '/\(([^)]+)\)\s*$/u', $title, $m ) ) {
+        $inner = bei_sanitize_location( $m[1] );
+        if ( bei_looks_like_place_name( $inner ) ) {
+            return $inner;
+        }
+    }
     if ( ! preg_match( '/^([A-Z][\p{L}\'’-]{2,})\b/u', $title, $m ) ) {
         return '';
     }
-    $deny = 'the|and|for|free|live|open|virtual|online|annual|music|concert|festival|workshop|market|fair|show|series|join|beyond|special|summer|winter|spring|fall|community|canada|national';
-    return preg_match( '/^(?:' . $deny . ')$/i', $m[1] ) ? '' : $m[1];
+    return bei_looks_like_place_name( $m[1] ) ? $m[1] : '';
+}
+
+/** Trailing "(City)" only — safe to use as a standalone location. */
+function bei_parenthetical_place_from_title( $title ) : string {
+    $title = html_entity_decode( trim( wp_strip_all_tags( (string) $title ) ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+    if ( ! preg_match( '/\(([^)]+)\)\s*$/u', $title, $m ) ) {
+        return '';
+    }
+    $inner = bei_sanitize_location( $m[1] );
+    return bei_looks_like_place_name( $inner ) ? $inner : '';
 }
 
 function bei_location_contains_place( $location, $place ) : bool {

@@ -37,7 +37,9 @@ function bei_upsert_event_post( $event ) {
 
     // Prefer a usable venue/city string for display + community matching:
     // feed location (reject province-only junk) → Event JSON-LD on the
-    // detail page → leading place from the title → feed label last.
+    // detail page → title city only when safe → feed label last.
+    // Never invent a location from the first word of the title alone
+    // (e.g. "Fashion Show" → "Fashion").
     $raw_location      = bei_sanitize_location( $event['location'] ?? '' );
     $province_hint     = bei_province_code_from_location( $raw_location );
     $incoming_location = ( $raw_location !== '' && ! bei_is_junk_location( $raw_location ) )
@@ -56,13 +58,23 @@ function bei_upsert_event_post( $event ) {
         }
     }
 
-    $title_place = bei_place_from_event_title( (string) ( $event['title'] ?? '' ) );
-    if ( $title_place !== '' || $province_hint !== '' ) {
+    $event_title = (string) ( $event['title'] ?? '' );
+    $title_place = bei_place_from_event_title( $event_title );
+    $paren_place = bei_parenthetical_place_from_title( $event_title );
+
+    if ( $incoming_location !== '' ) {
+        // Real venue/city already: append missing municipality / province.
         $incoming_location = bei_append_place_to_location(
             $incoming_location,
-            $title_place,
+            $title_place !== '' ? $title_place : $paren_place,
             $province_hint
         );
+    } elseif ( $paren_place !== '' ) {
+        // Empty location but title ends with "(Ottawa)" etc.
+        $incoming_location = bei_append_place_to_location( '', $paren_place, $province_hint );
+    } elseif ( $province_hint !== '' && $title_place !== '' ) {
+        // Feed gave only a province code (junk); title supplies the city.
+        $incoming_location = bei_append_place_to_location( '', $title_place, $province_hint );
     }
 
     if ( $incoming_location === '' ) {
