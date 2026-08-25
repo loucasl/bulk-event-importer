@@ -35,135 +35,62 @@ function bei_sanitize_location( $location ) : string {
     return sanitize_text_field( $location );
 }
 
-/**
- * Canadian province / territory codes used for junk-location checks.
- */
 function bei_province_codes() : array {
     return [ 'AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT' ];
 }
 
-/**
- * Whether a location value is too thin to keep (province-only, postal-only, etc.).
- * Empty string is not junk — callers treat empty separately.
- */
+/** Province-only / postal-only / tiny values are too thin to keep. */
 function bei_is_junk_location( $location ) : bool {
     $location = trim( (string) $location );
     if ( $location === '' ) {
         return false;
     }
-
     $upper = strtoupper( $location );
     if ( in_array( $upper, bei_province_codes(), true ) ) {
         return true;
     }
-
-    // Full province names with no city.
-    $names = [
-        'ALBERTA', 'BRITISH COLUMBIA', 'MANITOBA', 'NEW BRUNSWICK',
-        'NEWFOUNDLAND', 'NEWFOUNDLAND AND LABRADOR', 'NOVA SCOTIA',
-        'NORTHWEST TERRITORIES', 'NUNAVUT', 'ONTARIO',
-        'PRINCE EDWARD ISLAND', 'QUEBEC', 'SASKATCHEWAN', 'YUKON',
-        'CANADA',
-    ];
-    if ( in_array( $upper, $names, true ) ) {
+    if ( in_array( $upper, [ 'ONTARIO', 'BRITISH COLUMBIA', 'QUEBEC', 'ALBERTA', 'MANITOBA', 'SASKATCHEWAN', 'CANADA' ], true ) ) {
         return true;
     }
-
-    // Canadian postal code alone (with or without space).
-    if ( preg_match( '/^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z]\s?\d[ABCEGHJ-NPRSTV-Z]\d$/i', $location ) ) {
+    if ( strlen( $location ) <= 2 ) {
         return true;
     }
-
-    // Extremely short tokens (e.g. "A", "NB" already caught; "UK").
-    if ( function_exists( 'mb_strlen' ) ) {
-        return mb_strlen( $location ) <= 2;
-    }
-    return strlen( $location ) <= 2;
+    return (bool) preg_match( '/^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z]\s?\d[ABCEGHJ-NPRSTV-Z]\d$/i', $location );
 }
 
-/**
- * If $location is only a province code, return that code; otherwise ''.
- */
 function bei_province_code_from_location( $location ) : string {
     $upper = strtoupper( trim( (string) $location ) );
     return in_array( $upper, bei_province_codes(), true ) ? $upper : '';
 }
 
-/**
- * Leading place-like token from an event title (e.g. Mulmur, Orangeville).
- * Conservative: first capitalized word, skipping common non-place starters.
- */
+/** Leading capitalized title token, skipping common non-place starters. */
 function bei_place_from_event_title( $title ) : string {
-    $title = trim( wp_strip_all_tags( (string) $title ) );
-    if ( $title === '' ) {
-        return '';
-    }
-
-    // Decode entities so “Mulmur” / curly quotes don't break the match.
-    $title = html_entity_decode( $title, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
-
+    $title = html_entity_decode( trim( wp_strip_all_tags( (string) $title ) ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
     if ( ! preg_match( '/^([A-Z][\p{L}\'’-]{2,})\b/u', $title, $m ) ) {
         return '';
     }
-
-    $place = $m[1];
-    $deny  = [
-        'the', 'and', 'for', 'free', 'live', 'open', 'virtual', 'online', 'annual',
-        'music', 'concert', 'festival', 'workshop', 'market', 'fair', 'show', 'series',
-        'join', 'celebrate', 'kids', 'family', 'beyond', 'introducing', 'presents',
-        'special', 'summer', 'winter', 'spring', 'autumn', 'fall', 'holiday',
-        'christmas', 'halloween', 'easter', 'canada', 'canadian', 'national',
-        'international', 'community', 'neighbourhood', 'neighborhood', 'block',
-        'challenge', 'end', 'trail', 'park', 'library', 'gallery', 'museum',
-        'theatre', 'theater', 'tonight', 'today', 'this', 'from', 'with',
-    ];
-
-    if ( in_array( strtolower( $place ), $deny, true ) ) {
-        return '';
-    }
-
-    return $place;
+    $deny = 'the|and|for|free|live|open|virtual|online|annual|music|concert|festival|workshop|market|fair|show|series|join|beyond|special|summer|winter|spring|fall|community|canada|national';
+    return preg_match( '/^(?:' . $deny . ')$/i', $m[1] ) ? '' : $m[1];
 }
 
-/**
- * Whether $location already contains $place as a whole word (case-insensitive).
- */
 function bei_location_contains_place( $location, $place ) : bool {
-    $location = trim( (string) $location );
-    $place    = trim( (string) $place );
-    if ( $location === '' || $place === '' ) {
-        return false;
-    }
-
     $norm = static function ( $value ) {
         $value = strtolower( wp_strip_all_tags( (string) $value ) );
         $value = preg_replace( '/[^\p{L}\p{N}]+/u', ' ', $value );
-        return trim( preg_replace( '/\s+/', ' ', $value ) );
+        return trim( preg_replace( '/\s+/', ' ', (string) $value ) );
     };
-
-    $hay = ' ' . $norm( $location ) . ' ';
-    $needle = ' ' . $norm( $place ) . ' ';
-    return $needle !== '  ' && strpos( $hay, $needle ) !== false;
+    $place = $norm( $place );
+    return $place !== '' && strpos( ' ' . $norm( $location ) . ' ', ' ' . $place . ' ' ) !== false;
 }
 
-/**
- * Append a place (and optional province) to a location when missing.
- */
 function bei_append_place_to_location( $location, $place, $province = '' ) : string {
-    $location = bei_sanitize_location( $location );
+    $out      = bei_sanitize_location( $location );
     $place    = bei_sanitize_location( $place );
     $province = strtoupper( trim( (string) $province ) );
 
-    $out = $location;
-
-    if ( $place !== '' ) {
-        if ( $out === '' ) {
-            $out = $place;
-        } elseif ( ! bei_location_contains_place( $out, $place ) ) {
-            $out .= ', ' . $place;
-        }
+    if ( $place !== '' && ! bei_location_contains_place( $out, $place ) ) {
+        $out = ( $out === '' ) ? $place : ( $out . ', ' . $place );
     }
-
     if (
         $province !== ''
         && in_array( $province, bei_province_codes(), true )
