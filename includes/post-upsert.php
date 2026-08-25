@@ -35,17 +35,41 @@ function bei_upsert_event_post( $event ) {
         return 'skipped';
     }
 
-    // Prefer a real venue: feed field first, then Event JSON-LD on the
-    // detail page (common for SimpleView/Tourism RSS), then the feed label
-    // so RSS items without any venue still pass allowlist/geocode paths.
-    $incoming_location = bei_sanitize_location( $event['location'] ?? '' );
+    // Prefer a usable venue/city string for display + community matching:
+    // feed location (reject province-only junk) → Event JSON-LD on the
+    // detail page → leading place from the title → feed label last.
+    $raw_location      = bei_sanitize_location( $event['location'] ?? '' );
+    $province_hint     = bei_province_code_from_location( $raw_location );
+    $incoming_location = ( $raw_location !== '' && ! bei_is_junk_location( $raw_location ) )
+        ? $raw_location
+        : '';
+
     if ( $incoming_location === '' && ! empty( $event['external_url'] ) ) {
-        $incoming_location = bei_sanitize_location(
+        $enriched = bei_sanitize_location(
             bei_extract_location_from_url( (string) $event['external_url'] )
         );
+        if ( $enriched !== '' && ! bei_is_junk_location( $enriched ) ) {
+            $incoming_location = $enriched;
+            if ( $province_hint === '' ) {
+                $province_hint = bei_province_code_from_location( $enriched );
+            }
+        }
     }
+
+    $title_place = bei_place_from_event_title( (string) ( $event['title'] ?? '' ) );
+    if ( $title_place !== '' || $province_hint !== '' ) {
+        $incoming_location = bei_append_place_to_location(
+            $incoming_location,
+            $title_place,
+            $province_hint
+        );
+    }
+
     if ( $incoming_location === '' ) {
         $incoming_location = bei_sanitize_location( $event['source'] ?? '' );
+        if ( bei_is_junk_location( $incoming_location ) ) {
+            $incoming_location = '';
+        }
     }
     $event['location'] = $incoming_location;
 

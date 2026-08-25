@@ -119,6 +119,41 @@ bei_test_assert(
     ( $parsed['events'][1]['location'] ?? 'missing' ) === ''
 );
 
+bei_test_assert( 'ON is junk location', bei_is_junk_location( 'ON' ) );
+bei_test_assert( 'Ontario is junk location', bei_is_junk_location( 'Ontario' ) );
+bei_test_assert( 'venue is not junk', ! bei_is_junk_location( 'Dufferin Hi-Land Bruce Trail' ) );
+bei_test_assert( 'province code from ON', bei_province_code_from_location( 'ON' ) === 'ON' );
+bei_test_assert(
+    'title place from Mulmur challenge',
+    bei_place_from_event_title( 'Mulmur 175 End-to-End Challenge - All Ages' ) === 'Mulmur'
+);
+bei_test_assert(
+    'title place from Orangeville block box',
+    bei_place_from_event_title( 'Orangeville Neighbourhood Block Box' ) === 'Orangeville'
+);
+bei_test_assert(
+    'title place ignores Music starter',
+    bei_place_from_event_title( 'Music in the Library: Nanaimo Recorder Consort' ) === ''
+);
+bei_test_assert(
+    'append Mulmur onto trail venue',
+    bei_append_place_to_location( 'Dufferin Hi-Land Bruce Trail', 'Mulmur', '' )
+        === 'Dufferin Hi-Land Bruce Trail, Mulmur'
+);
+bei_test_assert(
+    'append Orangeville with ON province hint',
+    bei_append_place_to_location( '', 'Orangeville', 'ON' ) === 'Orangeville, ON'
+);
+bei_test_assert(
+    'append does not duplicate existing place',
+    bei_append_place_to_location( 'Orangeville, ON', 'Orangeville', 'ON' ) === 'Orangeville, ON'
+);
+bei_test_assert(
+    'location contains place is word-aware',
+    bei_location_contains_place( 'Dufferin Hi-Land Bruce Trail, Mulmur', 'Mulmur' )
+    && ! bei_location_contains_place( 'Kingston, ON', 'King' )
+);
+
 // Live page check (optional; skip quietly if unreachable).
 $live_html = '';
 if ( function_exists( 'curl_init' ) ) {

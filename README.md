@@ -69,7 +69,8 @@ Two hooks are available for site-specific behavior that does not belong in the s
 ### 2.2.1
 
 - RSS imports: read `location` / `venue` item fields when present
-- When RSS has no venue, enrich from schema.org Event JSON-LD on the event detail page (fixes Tourism Nanaimo and similar SimpleView feeds that only publish venue on the HTML page)
+- When a feed location is missing or junk (e.g. province-only `ON`), enrich from schema.org Event JSON-LD on the event detail page (RSS and ICS)
+- Append a leading place name from the event title when the location still lacks it (e.g. `Mulmur 175…` → `…, Mulmur`) so community auto-linkers can match
 - Re-import updates existing posts when the resolved location changes (and re-geocodes if that module is on)
 
 ### 2.2.0
