@@ -62,7 +62,7 @@ Two hooks are available for site-specific behavior that does not belong in the s
 | Hook | Type | Purpose |
 |---|---|---|
 | `bei_event_source_name` | Filter | Rewrite or blank a parsed source name |
-| `bei_after_upsert_event_post` | Action | Fires after every create/update; args: `$post_id`, `$event`, `$status`. Useful for linking to a related custom post type |
+| `bei_after_upsert_event_post` | Action | Fires after every create/update once location/source meta are written; args: `$post_id`, `$event`, `$status`. **Preferred** hook for community auto-linkers (also covers updates that skip `wp_update_post`) |
 
 ## Changelog
 
@@ -70,6 +70,7 @@ Two hooks are available for site-specific behavior that does not belong in the s
 
 - Event Source from the feed label by default (including Google Calendar feeds)
 - Opt-in per-feed `aggregate` flag derives Event Source from each event URL — for mix calendars only (e.g. `Lisa's TGS Calendar | … | ics | aggregate`)
+- Write `event-location` / `event-source` via `meta_input` on create so community auto-linkers on `save_post` see them immediately
 
 ### 2.3.0
 

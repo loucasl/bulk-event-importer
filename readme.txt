@@ -33,9 +33,10 @@ Two extensibility filters/actions are available for anything too
 site-specific to belong in the shared codebase:
 
 * `bei_event_source_name` (filter) — rewrite or blank a parsed source name.
-* `bei_after_upsert_event_post` (action) — fires after every create/update,
-  args: $post_id, $event, $status. Useful for hooking a site-specific
-  integration (e.g. auto-linking to a related custom post type).
+* `bei_after_upsert_event_post` (action) — fires after every create/update
+  once location/source meta are written; args: $post_id, $event, $status.
+  Preferred hook for community auto-linkers (also covers updates that skip
+  wp_update_post).
 
 == Changelog ==
 
@@ -43,6 +44,8 @@ site-specific to belong in the shared codebase:
 * Event Source uses the feed label by default (including Google Calendar feeds).
 * Opt-in per-feed aggregate flag derives Event Source from each event URL —
   for mix calendars only (e.g. Lisa's TGS Calendar | … | ics | aggregate).
+* Write event-location / event-source via meta_input on create so community
+  auto-linkers on save_post see them immediately.
 
 = 2.3.0 =
 * When an RSS item has no start date, fill startDate/endDate from Event
