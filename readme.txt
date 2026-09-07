@@ -4,7 +4,7 @@ Tags: events, import, ics, rss, jetengine
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.2.0
+Stable tag: 2.3.0
 License: GPLv2 or later
 
 Fetches external calendar feeds (RSS/ICS), normalizes them, and creates/updates
@@ -38,6 +38,12 @@ site-specific to belong in the shared codebase:
   integration (e.g. auto-linking to a related custom post type).
 
 == Changelog ==
+
+= 2.3.0 =
+* When an RSS item has no start date, fill startDate/endDate from Event
+  JSON-LD on the detail page (same fetch used for location).
+* Accepts schema.org Event subtypes such as MusicEvent (fixes feeds like
+  AllEvents city RSS that omit pubDate).
 
 = 2.2.0 =
 * Reworked Importer Settings copy and layout for non-technical editors

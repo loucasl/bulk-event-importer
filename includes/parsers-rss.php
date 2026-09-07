@@ -236,7 +236,7 @@ function bei_extract_event_fields_from_url( $url ) {
         'timeout'     => 15,
         'redirection' => 5,
         'headers'     => [
-            'User-Agent' => 'Mozilla/5.0 (compatible; BulkEventImporter/2.2)',
+            'User-Agent' => 'Mozilla/5.0 (compatible; BulkEventImporter/2.3)',
             'Accept'     => 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.8',
         ],
     ] );
