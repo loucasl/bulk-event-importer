@@ -24,7 +24,7 @@ function bei_settings_page_blockers() {
     global $wp_version;
     if ( version_compare( $wp_version, '6.9', '<' ) ) {
         $blockers[] = sprintf(
-            'Bulk Event Importer 2.2.0 requires WordPress 6.9 or newer (this site is running %s). Upgrade WordPress or deploy the main branch (2.0.x) until you can upgrade.',
+            'Bulk Event Importer 2.3.0 requires WordPress 6.9 or newer (this site is running %s). Upgrade WordPress or deploy the main branch (2.0.x) until you can upgrade.',
             $wp_version
         );
     }

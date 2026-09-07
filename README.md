@@ -4,7 +4,7 @@ A WordPress plugin that fetches external calendar feeds (RSS/ICS), normalizes th
 
 | | |
 |---|---|
-| **Version** | 2.2.2 |
+| **Version** | 2.3.0 |
 | **Requires WordPress** | 6.9+ |
 | **Tested up to** | 6.7 |
 | **Requires PHP** | 7.4+ |
@@ -65,6 +65,11 @@ Two hooks are available for site-specific behavior that does not belong in the s
 | `bei_after_upsert_event_post` | Action | Fires after every create/update; args: `$post_id`, `$event`, `$status`. Useful for linking to a related custom post type |
 
 ## Changelog
+
+### 2.3.0
+
+- When an RSS item has no start date, fill `startDate` / `endDate` from Event JSON-LD on the detail page (same fetch used for location)
+- Accepts schema.org Event subtypes such as `MusicEvent` (fixes feeds like AllEvents city RSS that omit `pubDate`)
 
 ### 2.2.2
 
