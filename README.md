@@ -4,7 +4,7 @@ A WordPress plugin that fetches external calendar feeds (RSS/ICS), normalizes th
 
 | | |
 |---|---|
-| **Version** | 2.3.0 |
+| **Version** | 2.4.0 |
 | **Requires WordPress** | 6.9+ |
 | **Tested up to** | 6.7 |
 | **Requires PHP** | 7.4+ |
@@ -44,7 +44,7 @@ Source lives in `src/admin/settings/`. Settings are exposed at `GET/PUT /wp-json
 
 All per-site behavior is managed from **Settings → Importer Settings**:
 
-- Feed URLs and type detection
+- Feed URLs and type detection (`Label | URL | ics|rss | aggregate`)
 - Blocked-keyword filter (always available) and allowlist filter (optional)
 - Import date window, default post status, cron interval
 - Categories & taxonomies — define any number of taxonomies and keyword groups
@@ -65,6 +65,11 @@ Two hooks are available for site-specific behavior that does not belong in the s
 | `bei_after_upsert_event_post` | Action | Fires after every create/update; args: `$post_id`, `$event`, `$status`. Useful for linking to a related custom post type |
 
 ## Changelog
+
+### 2.4.0
+
+- Event Source from the feed label by default (including Google Calendar feeds)
+- Opt-in per-feed `aggregate` flag derives Event Source from each event URL — for mix calendars only (e.g. `Lisa's TGS Calendar | … | ics | aggregate`)
 
 ### 2.3.0
 

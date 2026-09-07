@@ -171,7 +171,12 @@ add_action( 'wp_ajax_bulk_event_ajax_import_step', function() {
             }
 
             if ( $feed['type'] === 'ics' ) {
-                $events = Bulk_Event_Importer::parse_ics_body( $body, $feed['source'], $feed['url'] );
+                $events = Bulk_Event_Importer::parse_ics_body(
+                    $body,
+                    $feed['source'],
+                    $feed['url'],
+                    ! empty( $feed['aggregate'] )
+                );
             } else {
                 $rss    = Bulk_Event_Importer::parse_rss_body( $body, $feed['source'] );
                 $events = $rss['events'];

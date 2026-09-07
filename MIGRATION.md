@@ -159,8 +159,10 @@ shared codebase:
  * site-specific mu-plugin or snippet instead.
  */
 
-// Blank out a specific mislabeled calendar's source name (was previously
-// hardcoded as a regex inside post-upsert.php).
+// Blank out a specific mislabeled calendar's source name when URL-derived
+// aggregation did not replace it (was previously hardcoded as a regex inside
+// post-upsert.php). Prefer marking that feed with `| aggregate` in Settings
+// so Event Source comes from each event URL instead.
 add_filter( 'bei_event_source_name', function( $source, $event ) {
     if ( preg_match( "/^Lisa['’‘`´]s TGS Calendar$/i", trim( $source ) ) ) {
         return '';

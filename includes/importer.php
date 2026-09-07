@@ -144,7 +144,11 @@ function bei_run_import() {
         $items = [];
 
         if ( $feed['type'] === 'ics' ) {
-            $items = Bulk_Event_Importer::parse_ics_feed( $feed['url'], $feed['source'] );
+            $items = Bulk_Event_Importer::parse_ics_feed(
+                $feed['url'],
+                $feed['source'],
+                ! empty( $feed['aggregate'] )
+            );
         } elseif ( $feed['type'] === 'rss' ) {
             $items = Bulk_Event_Importer::parse_rss_feed( $feed['url'], $feed['source'] );
         }

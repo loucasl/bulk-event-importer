@@ -4,7 +4,7 @@ Tags: events, import, ics, rss, jetengine
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.3.0
+Stable tag: 2.4.0
 License: GPLv2 or later
 
 Fetches external calendar feeds (RSS/ICS), normalizes them, and creates/updates
@@ -17,7 +17,7 @@ codebase runs on every site.
 This plugin is shared, unmodified, across every site that uses it. All
 per-site behavior lives in Settings > Importer Settings:
 
-* Feed URLs and type detection
+* Feed URLs and type detection (`Label | URL | ics|rss | aggregate`)
 * Blocked-keyword filter (always available) and allowlist filter (optional)
 * Import date window, default post status, cron interval
 * Categories & Taxonomies: define any number of taxonomies and keyword
@@ -38,6 +38,11 @@ site-specific to belong in the shared codebase:
   integration (e.g. auto-linking to a related custom post type).
 
 == Changelog ==
+
+= 2.4.0 =
+* Event Source uses the feed label by default (including Google Calendar feeds).
+* Opt-in per-feed aggregate flag derives Event Source from each event URL —
+  for mix calendars only (e.g. Lisa's TGS Calendar | … | ics | aggregate).
 
 = 2.3.0 =
 * When an RSS item has no start date, fill startDate/endDate from Event

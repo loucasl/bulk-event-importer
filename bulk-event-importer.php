@@ -3,7 +3,7 @@
  * Plugin Name: Bulk Event Importer
  * Description: Fetches external calendar feeds (RSS/ICS), normalizes them, and creates/updates Event posts. Taxonomies, keyword rules, JetEngine field mapping, geocoding, and the allowlist filter are all configured per site from Settings, so one codebase runs on every site.
  * Author: Red Dragon Creative
- * Version: 2.3.0
+ * Version: 2.4.0
  * Requires at least: 6.9
  * Requires PHP: 7.4
  */
@@ -51,7 +51,8 @@ class Bulk_Event_Importer {
 
     /**
      * Get Feeds from Settings.
-     * Format per line: Label | URL | type (type is optional: ics or rss).
+     * Format per line: Label | URL | optional flags (ics|rss, aggregate).
+     * Example: Lisa's TGS Calendar | https://…/basic.ics | ics | aggregate
      * Lines starting with # // or STANDBY are treated as comments and skipped.
      */
     public static function get_feeds() {
@@ -90,13 +91,9 @@ class Bulk_Event_Importer {
                 $url = 'https://' . substr( $url, strlen( 'webcal://' ) );
             }
 
-            $type = '';
-            if ( count( $parts ) >= 3 ) {
-                $maybe = strtolower( trim( $parts[2] ) );
-                if ( in_array( $maybe, [ 'ics', 'rss' ], true ) ) {
-                    $type = $maybe;
-                }
-            }
+            $flags     = bei_parse_feed_flags( array_slice( $parts, 2 ) );
+            $type      = $flags['type'];
+            $aggregate = $flags['aggregate'];
 
             if ( ! $type ) {
                 $u = strtolower( $url );
@@ -125,9 +122,10 @@ class Bulk_Event_Importer {
             }
 
             $feeds[] = [
-                'source' => $source,
-                'url'    => $url,
-                'type'   => $type,
+                'source'    => $source,
+                'url'       => $url,
+                'type'      => $type,
+                'aggregate' => $aggregate,
             ];
         }
 
@@ -182,12 +180,12 @@ class Bulk_Event_Importer {
         return bei_fetch_remote( $url, $error, $http_code, $debug );
     }
 
-    public static function parse_ics_feed( $url, $source_name ) {
-        return bei_parse_ics_feed( $url, $source_name );
+    public static function parse_ics_feed( $url, $source_name, $aggregate = false ) {
+        return bei_parse_ics_feed( $url, $source_name, $aggregate );
     }
 
-    public static function parse_ics_body( $body, $source_name, $feed_url = '' ) {
-        return bei_parse_ics_body( $body, $source_name, $feed_url );
+    public static function parse_ics_body( $body, $source_name, $feed_url = '', $aggregate = false ) {
+        return bei_parse_ics_body( $body, $source_name, $feed_url, $aggregate );
     }
 
     public static function parse_rss_feed( $url, $source_name ) {
