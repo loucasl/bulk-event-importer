@@ -29,12 +29,6 @@ function bei_upsert_event_post( $event ) {
     $options   = get_option( Bulk_Event_Importer::OPTION_SETTINGS, [] );
     $field_map = bei_get_field_map();
 
-    // Date validation.
-    if ( empty( $event['start'] ) ) {
-        $GLOBALS['bei_last_skip_reason'] = 'missing_start_date';
-        return 'skipped';
-    }
-
     // Prefer a usable venue/city string for display + community matching:
     // feed location (reject province-only junk) → Event JSON-LD on the
     // detail page → title city only when safe → feed label last.
@@ -46,16 +40,41 @@ function bei_upsert_event_post( $event ) {
         ? $raw_location
         : '';
 
-    if ( $incoming_location === '' && ! empty( $event['external_url'] ) ) {
-        $enriched = bei_sanitize_location(
-            bei_extract_location_from_url( (string) $event['external_url'] )
-        );
-        if ( $enriched !== '' && ! bei_is_junk_location( $enriched ) ) {
-            $incoming_location = $enriched;
-            if ( $province_hint === '' ) {
-                $province_hint = bei_province_code_from_location( $enriched );
+    // One detail-page fetch fills missing start/end and/or location from Event JSON-LD
+    // (e.g. AllEvents RSS has links but no pubDate / start tags).
+    $need_dates    = ( $event['start'] === '' );
+    $need_location = ( $incoming_location === '' );
+    if ( ( $need_dates || $need_location ) && ! empty( $event['external_url'] ) ) {
+        $jsonld = bei_extract_event_fields_from_url( (string) $event['external_url'] );
+
+        if ( $need_dates && $jsonld['start'] !== '' ) {
+            $event['start'] = $jsonld['start'];
+            if ( $event['raw_start'] === '' ) {
+                $event['raw_start'] = $jsonld['raw_start'];
             }
         }
+        if ( $event['end'] === '' && $jsonld['end'] !== '' ) {
+            $event['end'] = $jsonld['end'];
+            if ( $event['raw_end'] === '' ) {
+                $event['raw_end'] = $jsonld['raw_end'];
+            }
+        }
+
+        if ( $need_location ) {
+            $enriched = bei_sanitize_location( $jsonld['location'] );
+            if ( $enriched !== '' && ! bei_is_junk_location( $enriched ) ) {
+                $incoming_location = $enriched;
+                if ( $province_hint === '' ) {
+                    $province_hint = bei_province_code_from_location( $enriched );
+                }
+            }
+        }
+    }
+
+    // Date validation (after optional JSON-LD enrichment).
+    if ( empty( $event['start'] ) ) {
+        $GLOBALS['bei_last_skip_reason'] = 'missing_start_date';
+        return 'skipped';
     }
 
     $event_title = (string) ( $event['title'] ?? '' );

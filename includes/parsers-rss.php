@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * RSS parsing + lightweight Event JSON-LD location enrichment.
+ * RSS parsing + lightweight Event JSON-LD enrichment (location + dates).
  */
 
 function bei_parse_rss_feed( $url, $source_name ) {
@@ -123,14 +123,48 @@ function bei_format_schema_place( $place ) {
 }
 
 /**
- * Pull venue/address from schema.org Event JSON-LD.
+ * True when @type is schema.org Event or a subtype (MusicEvent, SportsEvent, …).
  */
-function bei_location_from_jsonld( $json ) {
+function bei_is_schema_event_type( $types ) {
+    $types = is_array( $types ) ? $types : [ $types ];
+    foreach ( $types as $type ) {
+        // Event, MusicEvent, https://schema.org/SportsEvent, etc.
+        if ( is_string( $type ) && preg_match( '/(^|\/)[A-Za-z0-9]*Event$/i', $type ) ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Normalize a schema.org date value to a plain string.
+ */
+function bei_schema_date_string( $value ) {
+    if ( is_array( $value ) ) {
+        $value = reset( $value );
+    }
+    return is_string( $value ) || is_numeric( $value ) ? trim( (string) $value ) : '';
+}
+
+/**
+ * Pull location + start/end from schema.org Event JSON-LD.
+ *
+ * @return array{location:string,start:string,end:string,raw_start:string,raw_end:string}
+ */
+function bei_event_fields_from_jsonld( $json ) {
+    $empty = [
+        'location'  => '',
+        'start'     => '',
+        'end'       => '',
+        'raw_start' => '',
+        'raw_end'   => '',
+    ];
+
     if ( is_string( $json ) ) {
         $json = json_decode( trim( $json ), true );
     }
     if ( ! is_array( $json ) ) {
-        return '';
+        return $empty;
     }
 
     $nodes = isset( $json['@graph'] ) && is_array( $json['@graph'] )
@@ -138,30 +172,56 @@ function bei_location_from_jsonld( $json ) {
         : ( isset( $json[0] ) ? $json : [ $json ] );
 
     foreach ( $nodes as $node ) {
-        if ( ! is_array( $node ) || empty( $node['location'] ) ) {
+        if ( ! is_array( $node ) || ! bei_is_schema_event_type( $node['@type'] ?? '' ) ) {
             continue;
         }
-        $types = $node['@type'] ?? '';
-        $types = is_array( $types ) ? $types : [ $types ];
-        foreach ( $types as $type ) {
-            if ( is_string( $type ) && preg_match( '/(^|\/)Event$/i', $type ) ) {
-                return bei_format_schema_place( $node['location'] );
-            }
+
+        $location  = ! empty( $node['location'] ) ? bei_format_schema_place( $node['location'] ) : '';
+        $raw_start = bei_schema_date_string( $node['startDate'] ?? '' );
+        $raw_end   = bei_schema_date_string( $node['endDate'] ?? '' );
+
+        if ( $location === '' && $raw_start === '' && $raw_end === '' ) {
+            continue;
         }
+
+        return [
+            'location'  => $location,
+            'start'     => bei_rss_time_to_mysql( $raw_start ),
+            'end'       => bei_rss_time_to_mysql( $raw_end ),
+            'raw_start' => $raw_start,
+            'raw_end'   => $raw_end,
+        ];
     }
 
-    return '';
+    return $empty;
 }
 
 /**
- * Fetch an event page and read location from Event JSON-LD (request-cached).
+ * Pull venue/address from schema.org Event JSON-LD.
  */
-function bei_extract_location_from_url( $url ) {
+function bei_location_from_jsonld( $json ) {
+    return bei_event_fields_from_jsonld( $json )['location'];
+}
+
+/**
+ * Fetch an event page and read Event JSON-LD fields (request-cached).
+ *
+ * @return array{location:string,start:string,end:string,raw_start:string,raw_end:string}
+ */
+function bei_extract_event_fields_from_url( $url ) {
     static $cache = [];
+
+    $empty = [
+        'location'  => '',
+        'start'     => '',
+        'end'       => '',
+        'raw_start' => '',
+        'raw_end'   => '',
+    ];
 
     $url = trim( (string) $url );
     if ( $url === '' || ! str_starts_with( $url, 'http' ) ) {
-        return '';
+        return $empty;
     }
 
     $key = function_exists( 'esc_url_raw' ) ? esc_url_raw( $url ) : $url;
@@ -182,25 +242,33 @@ function bei_extract_location_from_url( $url ) {
     ] );
 
     if ( is_wp_error( $response ) || (int) wp_remote_retrieve_response_code( $response ) !== 200 ) {
-        return $cache[ $key ] = '';
+        return $cache[ $key ] = $empty;
     }
 
-    $html = (string) wp_remote_retrieve_body( $response );
-    $location = '';
+    $html   = (string) wp_remote_retrieve_body( $response );
+    $fields = $empty;
     if ( $html !== '' && preg_match_all(
         '#<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>#is',
         $html,
         $matches
     ) ) {
         foreach ( $matches[1] as $raw ) {
-            $location = bei_location_from_jsonld(
+            $candidate = bei_event_fields_from_jsonld(
                 html_entity_decode( trim( (string) $raw ), ENT_QUOTES | ENT_HTML5, 'UTF-8' )
             );
-            if ( $location !== '' ) {
+            if ( $candidate['location'] !== '' || $candidate['start'] !== '' ) {
+                $fields = $candidate;
                 break;
             }
         }
     }
 
-    return $cache[ $key ] = $location;
+    return $cache[ $key ] = $fields;
+}
+
+/**
+ * Fetch an event page and read location from Event JSON-LD (request-cached).
+ */
+function bei_extract_location_from_url( $url ) {
+    return bei_extract_event_fields_from_url( $url )['location'];
 }
