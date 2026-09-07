@@ -7,15 +7,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  * ICS parsing functions. Class wrappers call these so hook code doesn't change.
  */
 
-function bei_parse_ics_feed( $url, $source_name ) {
+function bei_parse_ics_feed( $url, $source_name, $aggregate = false ) {
     $body = Bulk_Event_Importer::fetch_remote( $url );
     if ( ! $body ) {
         return [];
     }
-    return bei_parse_ics_body( $body, $source_name, $url );
+    return bei_parse_ics_body( $body, $source_name, $url, $aggregate );
 }
 
-function bei_parse_ics_body( $body, $source_name, $feed_url = '' ) {
+function bei_parse_ics_body( $body, $source_name, $feed_url = '', $aggregate = false ) {
 
     // Handle folded lines (lines beginning with a space are continuations per RFC 5545).
     $body   = preg_replace( "/\r\n[ \t]/", '', $body );
@@ -52,16 +52,11 @@ function bei_parse_ics_body( $body, $source_name, $feed_url = '' ) {
 
             $desc = bei_clean_ics_description( $desc, $external_url );
 
+            // Default: keep the feed label. Opt-in "aggregate" feeds (e.g. a
+            // personal Google Calendar that remixes many origins) may replace
+            // the label with a name derived from the event URL host.
             $event_source = $source_name;
-            $is_gcal      = false;
-            if ( preg_match( '#google\.com/calendar#i', $feed_url ) || preg_match( '#calendar\.google\.com#i', $feed_url ) ) {
-                $is_gcal = true;
-            }
-            if ( ! empty( $current['URL'] ) && ( preg_match( '#google\.com/calendar#i', $current['URL'] ) || preg_match( '#calendar\.google\.com#i', $current['URL'] ) ) ) {
-                $is_gcal = true;
-            }
-
-            if ( $is_gcal && ! empty( $external_url ) ) {
+            if ( $aggregate && ! empty( $external_url ) ) {
                 $extracted_source = bei_get_source_name_from_url( $external_url );
                 if ( ! empty( $extracted_source ) ) {
                     $event_source = $extracted_source;

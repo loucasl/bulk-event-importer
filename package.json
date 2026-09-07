@@ -1,6 +1,6 @@
 {
   "name": "bulk-event-importer",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "private": true,
   "scripts": {
     "build": "wp-scripts build src/admin/settings/index.js --output-path=build --output-filename=settings.js",

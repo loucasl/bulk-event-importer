@@ -200,6 +200,11 @@ function bei_upsert_event_post( $event ) {
     $raw_description = trim( wp_strip_all_tags( $event['description'] ) );
     $post_content     = wpautop( wp_kses_post( $event['description'] ) );
 
+    // Resolve source before insert so create-time hooks (e.g. community
+    // auto-linkers on save_post) see event-source / event-location meta.
+    $resolved_source = ! empty( $event['source'] ) ? (string) $event['source'] : '';
+    $resolved_source = (string) apply_filters( 'bei_event_source_name', $resolved_source, $event );
+
     if ( $existing ) {
 
         $post_id = $existing[0]->ID ?? $existing[0];
@@ -233,20 +238,29 @@ function bei_upsert_event_post( $event ) {
 
         $import_status = $options['default_post_status'] ?? 'publish';
 
+        $meta_input = [
+            Bulk_Event_Importer::META_HASH_KEY => $hash,
+        ];
+        if ( ! empty( $field_map['location_meta'] ) && $event['location'] !== '' ) {
+            $meta_input[ $field_map['location_meta'] ] = $event['location'];
+        }
+        if ( ! empty( $field_map['source_meta'] ) && $resolved_source !== '' ) {
+            $meta_input[ $field_map['source_meta'] ] = $resolved_source;
+        }
+
         $post_id = wp_insert_post( [
             'post_type'    => Bulk_Event_Importer::POST_TYPE,
             'post_status'  => $import_status,
             'post_author'  => 0,
             'post_title'   => $event['title'],
             'post_content' => $post_content,
+            'meta_input'   => $meta_input,
         ] );
 
         if ( is_wp_error( $post_id ) ) {
             error_log( 'Bulk Event Importer: post insert error ' . $post_id->get_error_message() );
             return 'skipped';
         }
-
-        update_post_meta( $post_id, Bulk_Event_Importer::META_HASH_KEY, $hash );
 
         $status = 'created';
     }
@@ -272,6 +286,7 @@ function bei_upsert_event_post( $event ) {
     bei_write_date_fields( $post_id, $dt_start, $dt_end, $raw_start, $raw_end );
 
     // Location (+ trigger geocoding when the module is enabled and the value changed).
+    // On create, location may already be present via meta_input; still geocode.
     if ( ! empty( $field_map['location_meta'] ) ) {
         $old_location = (string) get_post_meta( $post_id, $field_map['location_meta'], true );
         $new_location = $event['location'];
@@ -280,6 +295,8 @@ function bei_upsert_event_post( $event ) {
             bei_delete_meta_if_present( $post_id, $field_map['location_meta'] );
         } elseif ( $old_location !== $new_location ) {
             update_post_meta( $post_id, $field_map['location_meta'], $new_location );
+            bei_geocode_and_save_for_post( (int) $post_id );
+        } elseif ( $status === 'created' ) {
             bei_geocode_and_save_for_post( (int) $post_id );
         }
     }
@@ -297,15 +314,12 @@ function bei_upsert_event_post( $event ) {
         bei_write_meta_if_changed( $post_id, $field_map['external_url_meta'], esc_url_raw( $event['external_url'] ) );
     }
 
-    // Source. A filter is provided so a site can blank/rewrite specific
-    // source names (e.g. a mislabeled calendar feed) without a code fork.
+    // Source (already applied via meta_input on create when non-empty).
     if ( ! empty( $field_map['source_meta'] ) ) {
-        $new_source = ! empty( $event['source'] ) ? (string) $event['source'] : '';
-        $new_source = (string) apply_filters( 'bei_event_source_name', $new_source, $event );
-        if ( $new_source === '' ) {
+        if ( $resolved_source === '' ) {
             bei_delete_meta_if_present( $post_id, $field_map['source_meta'] );
         } else {
-            bei_write_meta_if_changed( $post_id, $field_map['source_meta'], $new_source );
+            bei_write_meta_if_changed( $post_id, $field_map['source_meta'], $resolved_source );
         }
     }
 

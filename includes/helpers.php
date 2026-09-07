@@ -172,6 +172,35 @@ function bei_normalize_keyword_csv( $raw ) {
     return implode( ',', $keywords );
 }
 
+/**
+ * Parse optional feed-line flags after Label | URL.
+ * Recognizes type (ics|rss) and aggregate in any order.
+ *
+ * @param string[] $flag_parts Trimmed segments after the URL.
+ * @return array{type:string,aggregate:bool}
+ */
+function bei_parse_feed_flags( array $flag_parts ) : array {
+    $type      = '';
+    $aggregate = false;
+
+    foreach ( $flag_parts as $part ) {
+        $maybe = strtolower( trim( (string) $part ) );
+        if ( $maybe === '' ) {
+            continue;
+        }
+        if ( in_array( $maybe, [ 'ics', 'rss' ], true ) ) {
+            $type = $maybe;
+        } elseif ( $maybe === 'aggregate' ) {
+            $aggregate = true;
+        }
+    }
+
+    return [
+        'type'      => $type,
+        'aggregate' => $aggregate,
+    ];
+}
+
 function bei_get_source_name_from_url( $url ) {
     $host = wp_parse_url( $url, PHP_URL_HOST );
     if ( ! $host ) {

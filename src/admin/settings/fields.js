@@ -25,7 +25,7 @@ export function getSettingsFields() {
 			label: __( 'List of URLs', 'bulk-event-importer' ),
 			type: 'text',
 			description: __(
-				'Enter one feed URL per line in the following format: Feed Label | Feed URL | Feed Type (ics or rss, optional). Add a # before each line if you\'d like that feed ignored during imports.',
+				'Enter one feed URL per line: Feed Label | Feed URL | optional flags. Flags can be ics or rss, and aggregate (derive Event Source from each event URL — use only for mix calendars like a personal Google Calendar). Example: Lisa\'s TGS Calendar | https://…/basic.ics | ics | aggregate. Prefix a line with # to skip it during imports.',
 				'bulk-event-importer'
 			),
 			Edit: TextareaFieldEdit,
@@ -48,7 +48,7 @@ export function getSettingsFields() {
 				},
 			],
 			description: __(
-				'If you’re not sure, leave ICS (Calendar Feed). You can also put ics or rss at the end of a feed line to override this for that feed.',
+				'If you’re not sure, leave ICS (Calendar Feed). You can also put ics or rss on a feed line (with optional aggregate) to override this for that feed.',
 				'bulk-event-importer'
 			),
 			Edit: SelectFieldEdit,
