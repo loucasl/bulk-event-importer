@@ -4,7 +4,7 @@ Tags: events, import, ics, rss, jetengine
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.4.0
+Stable tag: 2.4.1
 License: GPLv2 or later
 
 Fetches external calendar feeds (RSS/ICS), normalizes them, and creates/updates
@@ -39,6 +39,11 @@ site-specific to belong in the shared codebase:
   wp_update_post).
 
 == Changelog ==
+
+= 2.4.1 =
+* Stop appending the first word of the event title to a feed location
+  ("Meridian Centre, Tiff"), which geocoded events in the wrong city.
+  Only a trailing "(City)" in the title is used as a place.
 
 = 2.4.0 =
 * Event Source uses the feed label by default (including Google Calendar feeds).

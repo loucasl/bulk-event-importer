@@ -94,6 +94,15 @@ bei_test_assert( 'append Mulmur', bei_append_place_to_location( 'Dufferin Hi-Lan
 bei_test_assert( 'append Orangeville+ON', bei_append_place_to_location( '', 'Orangeville', 'ON' ) === 'Orangeville, ON' );
 bei_test_assert( 'no King in Kingston', ! bei_location_contains_place( 'Kingston, ON', 'King' ) );
 
+// Event location: never append the leading title word to a real venue.
+bei_test_assert( 'resolve no Tiff suffix', bei_resolve_event_location( 'The Meridian Centre for the Arts', 'Tiff in Fort Erie Movie Night' ) === 'The Meridian Centre for the Arts' );
+bei_test_assert( 'resolve no Hotel suffix', bei_resolve_event_location( 'Théâtre Capitol Theatre, 811 Main Street', 'Hotel California: The Original Eagles Tribute' ) === 'Théâtre Capitol Theatre, 811 Main Street' );
+bei_test_assert( 'resolve no Toronto suffix', bei_resolve_event_location( 'The International Centre, 6900 Airport Rd, Mississauga, ON', "Toronto Rock N' Gem Show", 'ON' ) === 'The International Centre, 6900 Airport Rd, Mississauga, ON' );
+bei_test_assert( 'resolve paren appended', bei_resolve_event_location( 'City Hall', 'Together for Nature Tour (Ottawa)' ) === 'City Hall, Ottawa' );
+bei_test_assert( 'resolve paren only', bei_resolve_event_location( '', 'Together for Nature Tour (Ottawa)', 'ON' ) === 'Ottawa, ON' );
+bei_test_assert( 'resolve province appended', bei_resolve_event_location( 'Downtown Bolton', 'Santa Claus Parade', 'ON' ) === 'Downtown Bolton, ON' );
+bei_test_assert( 'resolve no Halloween, ON', bei_resolve_event_location( '', 'Halloween in the Village 2026', 'ON' ) === '' );
+
 if ( $failed > 0 ) {
     fwrite( STDERR, "Failed: {$failed}\n" );
     exit( 1 );

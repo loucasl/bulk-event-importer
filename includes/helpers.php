@@ -79,7 +79,8 @@ function bei_looks_like_place_name( $place ) : bool {
 
 /**
  * Place hint from an event title.
- * Prefer trailing "(City)"; else a leading capitalized token (append-only use).
+ * Prefer trailing "(City)"; else a leading capitalized token.
+ * Not used to build event locations (see bei_resolve_event_location()).
  */
 function bei_place_from_event_title( $title ) : string {
     $title = html_entity_decode( trim( wp_strip_all_tags( (string) $title ) ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
@@ -135,6 +136,29 @@ function bei_append_place_to_location( $location, $place, $province = '' ) : str
     }
 
     return bei_sanitize_location( $out );
+}
+
+/**
+ * Final location string for an imported event.
+ *
+ * Only a trailing "(City)" in the title is trusted as a place. The leading
+ * title word ("Tiff in Fort Erie…", "Hotel California", "Leather Working")
+ * is never appended: it is usually not a place, and the geocoder then pins
+ * the event in the wrong city.
+ */
+function bei_resolve_event_location( $location, $title, $province_hint = '' ) : string {
+    $paren_place = bei_parenthetical_place_from_title( $title );
+
+    if ( bei_sanitize_location( $location ) !== '' ) {
+        // Real venue/city already: append a "(City)" from the title and the province.
+        return bei_append_place_to_location( $location, $paren_place, $province_hint );
+    }
+    if ( $paren_place !== '' ) {
+        // Empty location but title ends with "(Ottawa)" etc.
+        return bei_append_place_to_location( '', $paren_place, $province_hint );
+    }
+
+    return '';
 }
 
 function bei_matches_keywords( $text, $keywords_raw ) {
